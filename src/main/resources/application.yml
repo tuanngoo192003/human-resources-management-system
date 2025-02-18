@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/human_resource_management_system_mvp
     username: postgres
-    password: postgres
+    password: VTI2025.Hoa##
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,3 +15,8 @@ jwt:
   secret-key: y1mPi8MopfsX6Fzthj3FkXsX2HNk05dd61hOXZlf6aU=y1mPi8MopfsX6Fzthj3FkXsX2HNk05dd61hOXZlf6aU=
   refresh-token:
     expiration: 10080
+springdoc:
+  api-docs:
+    enabled: true  
+  packages-to-scan: com.lab.server.controllers  
+  paths-to-match: /**  
