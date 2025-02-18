@@ -23,6 +23,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.lab.server.configs.language.DetectLanguageInterceptor;
+import com.lab.server.configs.language.MessageSourceHelper;
 
 @Configuration
 @EnableWebSecurity
@@ -33,23 +34,23 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     private final JwtProvider jwtProvider;
     private final UserDetailsService userDetailsService;
     private final DetectLanguageInterceptor languageInterceptor;
+    private final MessageSourceHelper messageSourceHelper;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()  
-                        .anyRequest().authenticated())  
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); 
-        
+        http
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())  
+            	.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            	.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            	.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); 
+
         return http.build();
     }
-
+    
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(){
-        return new JwtAuthenticationFilter(jwtProvider, userDetailsService);
+        return new JwtAuthenticationFilter(jwtProvider, userDetailsService, messageSourceHelper);
     }
 
     @Override

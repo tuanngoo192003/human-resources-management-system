@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.lab.server.configs.language.MessageSourceHelper;
+
 import java.io.IOException;
 
 @Slf4j
@@ -22,21 +24,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
     private final UserDetailsService userDetailsService;
+    private final MessageSourceHelper messageSourceHelper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-    	try{
-            String jwt = jwtProvider.getJwtFromRequest(request);
-        	String username = jwtProvider.getUsernameFromToken(jwt);
-        
-            UserDetails userDetails = userDetailsService
-                    .loadUserByUsername(username);
+        String jwt = jwtProvider.getJwtFromRequest(request);
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, jwt, userDetails.getAuthorities());
+        String[] publicUrls = {"/auth/.*", "/v3/api-docs/.*", "/v3/api-docs","/swagger-ui/.*", "/swagger-ui.html"};
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (Exception e){
-            log.error("huhuhuhu");
+        for (String publicUrl : publicUrls) {
+            if (request.getRequestURI().matches(publicUrl)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+        }
+
+        try {
+        	 String username = jwtProvider.getUsernameFromToken(jwt);
+
+             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                 userDetails, jwt, userDetails.getAuthorities());
+
+             SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (Exception e) {
+            log.error(messageSourceHelper.getMessage("error.notfound"));
+            return;
         }
 
         filterChain.doFilter(request, response);

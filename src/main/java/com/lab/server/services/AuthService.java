@@ -20,12 +20,14 @@ import com.lab.server.payload.auth.LoginRequest;
 import com.lab.server.payload.auth.LoginResponse;
 import com.lab.server.payload.auth.TokenResponse;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class AuthService {
 	
 	private final UserService userService;

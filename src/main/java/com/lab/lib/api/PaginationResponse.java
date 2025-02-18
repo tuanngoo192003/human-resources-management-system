@@ -23,8 +23,5 @@ public class PaginationResponse<T> implements Serializable {
 	private List<T> data; 
 	private long totalRecord;
 	private long totalPage;
-	
-	public static final int DEFAULT_PAGE = 1;
-	public static final int DEFAULT_PERPAGE = 15;
 
 }
