@@ -11,7 +11,12 @@ spring:
     show-sql: false
 jwt:
   access-token:
-    expiration: 60
-  secret-key: token-secret-key
+    expiration: 6000000
+  secret-key: y1mPi8MopfsX6Fzthj3FkXsX2HNk05dd61hOXZlf6aU=y1mPi8MopfsX6Fzthj3FkXsX2HNk05dd61hOXZlf6aU=
   refresh-token:
     expiration: 10080
+springdoc:
+  api-docs:
+    enabled: true  
+  packages-to-scan: com.lab.server.controllers  
+  paths-to-match: /**  

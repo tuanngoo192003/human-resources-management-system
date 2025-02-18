@@ -7,7 +7,10 @@ import com.lab.lib.service.BaseService;
 import com.lab.server.entities.User;
 import com.lab.server.repositories.UserRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class UserService extends BaseService<User, Integer> {
 
     private final UserRepository repository;

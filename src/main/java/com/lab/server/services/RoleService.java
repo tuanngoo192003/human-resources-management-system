@@ -7,7 +7,10 @@ import com.lab.lib.service.BaseService;
 import com.lab.server.entities.Role;
 import com.lab.server.repositories.RoleRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class RoleService extends BaseService<Role, Integer> {
 
     private final RoleRepository repository;

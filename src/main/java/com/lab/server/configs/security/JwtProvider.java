@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.StringUtils;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public class JwtProvider {
 	public String generateToken(String username, String language){
 		Date now = new Date();
 		Date expiryDate = new Date(now.getTime() + expirationTime);
-
+		
 		return Jwts.builder().setHeader(Map.of("typ", "JWT"))
 				.setSubject(username)
 				.setIssuedAt(now)
