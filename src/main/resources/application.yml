@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: demo1
+  datasource:
+    url: jdbc:postgresql://localhost:5432/human_resource_management_system_mvp
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+jwt:
+  access-token:
+    expiration: 60
+  secret-key: token-secret-key
+  refresh-token:
+    expiration: 10080
