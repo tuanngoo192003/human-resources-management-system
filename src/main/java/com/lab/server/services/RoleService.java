@@ -1,12 +1,8 @@
 package com.lab.server.services;
 
-import java.lang.StackWalker.Option;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.context.MessageSource;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,13 +11,10 @@ import com.lab.lib.enumerated.SystemRole;
 import com.lab.lib.repository.BaseRepository;
 import com.lab.lib.service.BaseService;
 import com.lab.lib.utils.PagingUtil;
-import com.lab.server.configs.language.MessageSourceHelper;
 import com.lab.server.entities.Role;
 import com.lab.server.payload.role.RoleRequest;
 import com.lab.server.payload.role.RoleResponse;
 import com.lab.server.repositories.RoleRepository;
-
-import lombok.experimental.Helper;
 
 
 @Service

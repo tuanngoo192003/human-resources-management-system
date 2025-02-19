@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -59,14 +58,14 @@ public class RoleController {
 	@Tag(name = "role")
 	@Operation(summary = "API update role by id")
 	@PutMapping("/{id}")
-	public ResponseEntity<?> createRole(@PathVariable int id, @RequestBody RoleRequest request) {
+	public ResponseEntity<?> updateRoleById(@PathVariable int id, @RequestBody RoleRequest request) {
 		return ResponseEntity.ok(roleService.updateRoleById(id,request));
 	}
 	
 	@Tag(name = "role")
 	@Operation(summary = "API delete role by id")
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> createRole(@PathVariable int id) {
+	public ResponseEntity<?> deleteRoleById(@PathVariable int id) {
 		return ResponseEntity.ok(roleService.deleteRoleById(id));
 	}
 	

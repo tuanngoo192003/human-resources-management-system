@@ -7,6 +7,6 @@ import lombok.*;
 @Getter
 @Setter
 public class RoleRequest {
-	String name;
-	String description;
+	private String name;
+	private String description;
 }
