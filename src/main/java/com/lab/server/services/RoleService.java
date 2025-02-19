@@ -1,25 +1,34 @@
 package com.lab.server.services;
 
+import java.lang.StackWalker.Option;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.context.MessageSource;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.lab.lib.api.PaginationResponse;
+import com.lab.lib.enumerated.SystemRole;
 import com.lab.lib.repository.BaseRepository;
 import com.lab.lib.service.BaseService;
 import com.lab.lib.utils.PagingUtil;
+import com.lab.server.configs.language.MessageSourceHelper;
 import com.lab.server.entities.Role;
+import com.lab.server.payload.role.RoleRequest;
 import com.lab.server.payload.role.RoleResponse;
 import com.lab.server.repositories.RoleRepository;
 
-import jakarta.transaction.Transactional;
+import lombok.experimental.Helper;
+
 
 @Service
 @Transactional
 public class RoleService extends BaseService<Role, Integer> {
 
-    private final RoleRepository repository;
+    private final RoleRepository repository;    
 
     protected RoleService(BaseRepository<Role, Integer> repository) {
         super(repository);
@@ -49,4 +58,44 @@ public class RoleService extends BaseService<Role, Integer> {
 				.totalPage(totalPage)	
 				.build();
 	}
+	
+	@Transactional(readOnly = true)
+	@SuppressWarnings("null")
+	public List<RoleResponse> findAll(){
+		List<Role> roleList= repository.findAll();
+		List<RoleResponse> roleResponses = new ArrayList<>();
+		roleList.forEach(r -> roleResponses.add(new RoleResponse(r.getRoleId(),r.getRoleName().toString(), r.getDescription())));
+		return roleResponses;
+	}
+	
+	@Transactional(readOnly = true)
+	public RoleResponse findRoleById(int id) {
+		Role role= repository.findById(id).orElse(null);
+		return new RoleResponse(role.getRoleId(),role.getRoleName().toString(), role.getDescription());
+	}
+	
+	public RoleResponse createRole(RoleRequest request) {
+		Role role = new Role();
+		role.setRoleName(SystemRole.fromStringToEnum(request.getName()));
+		role.setDescription(request.getDescription());
+		repository.save(role);
+		return new RoleResponse(role.getRoleId(),role.getRoleName().toString(), role.getDescription());
+	}
+	
+	public RoleResponse updateRoleById(int id, RoleRequest request) {
+		Role role= repository.findById(id).orElse(null);
+		if(!request.getName().isEmpty())
+		role.setRoleName(SystemRole.fromStringToEnum(request.getName()));
+		if(!request.getDescription().isEmpty())
+		role.setDescription(request.getDescription());
+		repository.save(role);
+		return new RoleResponse(role.getRoleId(),role.getRoleName().toString(), role.getDescription());
+	}
+	
+	public String deleteRoleById(int id) {
+		Role role= repository.findById(id).orElse(null);
+		repository.delete(role);
+		return "Delete role "+id+" successfully!";
+	}
+	
 }
