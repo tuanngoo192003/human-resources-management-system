@@ -5,20 +5,18 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.lab.server.configs.language.MessageSourceHelper;
 
 import java.io.IOException;
 
-@Slf4j
+@Log4j2
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -50,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
              SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {
             log.error(messageSourceHelper.getMessage("error.notfound"));
-            return;
+            throw new ServletException("error.token.notfound");
         }
 
         filterChain.doFilter(request, response);

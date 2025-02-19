@@ -12,9 +12,10 @@ import com.lab.server.entities.User;
 import com.lab.server.services.UserService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+@Log4j2
 @Component
 @RequiredArgsConstructor
 public class SecurityHelper {

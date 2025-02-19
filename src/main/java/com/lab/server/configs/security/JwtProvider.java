@@ -3,6 +3,7 @@ package com.lab.server.configs.security;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,7 +17,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Component
-@Slf4j
+@Log4j2
 @RequiredArgsConstructor
 public class JwtProvider {
 
@@ -32,7 +33,7 @@ public class JwtProvider {
 	private final String AUTH_PREFIX = "Bearer ";
 	private final String HEADER = "Authorization";
 
-	public String generateToken(String username, String language){
+	public String generateToken(String username){
 		Date now = new Date();
 		Date expiryDate = new Date(now.getTime() + expirationTime);
 		
@@ -40,7 +41,6 @@ public class JwtProvider {
 				.setSubject(username)
 				.setIssuedAt(now)
 				.setExpiration(expiryDate)
-				.claim("lang", language)
 				.signWith(SignatureAlgorithm.HS512, secretKey)
 				.compact();
 	}
@@ -76,14 +76,6 @@ public class JwtProvider {
 			return bearerToken.substring(7);
 		}
 		return null;
-	}
-
-	public String getLanguageFromToken(String token) {
-		Claims claims = Jwts.parser()
-				.setSigningKey(secretKey)
-				.parseClaimsJws(token)
-				.getBody();
-		return claims.get("lang", String.class);
 	}
 
 }
