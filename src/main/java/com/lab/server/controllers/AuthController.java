@@ -15,9 +15,10 @@ import com.lab.server.payload.auth.LoginResponse;
 import com.lab.server.services.AuthService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+@Log4j2
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
