@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/human_resource_management_system_mvp
     username: postgres
-    password: postgres
+    password: VTI2025.Hoa##
   jpa:
     hibernate:
       ddl-auto: update
