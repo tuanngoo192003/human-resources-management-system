@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
              SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {
             log.error(messageSourceHelper.getMessage("error.notfound"));
-            return;
+            throw new ServletException("error.token.notfound");
         }
 
         filterChain.doFilter(request, response);

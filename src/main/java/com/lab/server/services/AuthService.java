@@ -45,11 +45,11 @@ public class AuthService {
 	
 		try {
 			Authentication authentication = authenticationManager.authenticate(
-	                new UsernamePasswordAuthenticationToken(request.getIdentifier(), request.getPassword()));
+	                new UsernamePasswordAuthenticationToken(user.getUsername(), request.getPassword()));
 		
 	        SecurityContextHolder.getContext().setAuthentication(authentication);
 	  
-	        final String accessToken = jwtProvider.generateToken(request.getIdentifier(), getLegion().name());
+	        final String accessToken = jwtProvider.generateToken(request.getIdentifier());
 	        final String refreshToken = UUID.randomUUID().toString();
 	  
 	        return LoginResponse.builder()
@@ -74,6 +74,7 @@ public class AuthService {
 				|| identifier.contains(Constants.MailFormat.FPT_MAIL) || identifier.contains(Constants.MailFormat.STARDARD_MAIL);
 	}
 	
+	@Deprecated
 	private Language getLegion() {
 		final Locale userLocale = LocaleContextHolder.getLocale();
 		switch(userLocale.getLanguage()) {
