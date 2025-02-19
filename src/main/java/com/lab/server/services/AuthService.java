@@ -22,10 +22,11 @@ import com.lab.server.payload.auth.TokenResponse;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Slf4j
+@Log4j2
 @RequiredArgsConstructor
 @Transactional
 public class AuthService {
@@ -49,7 +50,7 @@ public class AuthService {
 		
 	        SecurityContextHolder.getContext().setAuthentication(authentication);
 	  
-	        final String accessToken = jwtProvider.generateToken(request.getIdentifier());
+	        final String accessToken = jwtProvider.generateToken(user.getUsername());
 	        final String refreshToken = UUID.randomUUID().toString();
 	  
 	        return LoginResponse.builder()

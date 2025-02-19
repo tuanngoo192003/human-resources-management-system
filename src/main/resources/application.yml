@@ -20,3 +20,18 @@ springdoc:
     enabled: true  
   packages-to-scan: com.lab.server.controllers  
   paths-to-match: /**  
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "logfile" 
+  endpoint:
+    health:
+      show-details: always
+  file:
+    name: ${LOGGING_FILE_PATH:./logs/accounts.log}
+
+logging:
+  file:
+    name: ./logs/accounts.log
+

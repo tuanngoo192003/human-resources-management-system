@@ -3,6 +3,7 @@ package com.lab.server.configs.security;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,7 +17,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Component
-@Slf4j
+@Log4j2
 @RequiredArgsConstructor
 public class JwtProvider {
 

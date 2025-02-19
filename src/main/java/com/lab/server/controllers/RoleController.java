@@ -15,7 +15,9 @@ import com.lab.server.payload.role.RoleResponse;
 import com.lab.server.services.RoleService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/role")
@@ -27,6 +29,7 @@ public class RoleController {
 	@PostMapping("/mock")
 	public ApiResponse<String> mockApi(@RequestParam("id") int id) throws Exception {
 		String rep = helper.getMessage("success.saved");
+		log.error("Test");
 		return new ApiResponse<String>(true, rep, rep);
 	}
 	
