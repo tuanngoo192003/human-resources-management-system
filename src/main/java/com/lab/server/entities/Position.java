@@ -2,6 +2,7 @@ package com.lab.server.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import java.io.Serializable;
 @Table(name = "positions", schema = "public")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -21,6 +23,6 @@ public class Position implements Serializable {
 	private int positionId;
 	
 	@Column(name = "position_name", nullable = false, length = 255)
-	private int positionName;
+	private String positionName;
 	
 }
