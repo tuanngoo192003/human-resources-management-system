@@ -1,6 +1,7 @@
 package com.lab.server.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.lab.lib.repository.BaseRepository;
 import com.lab.server.entities.Role;
+import com.lab.server.payload.rolepermission.RolePermissionResponse;
 
 @Repository
 public interface RoleRepository extends BaseRepository<Role, Integer> {
@@ -21,4 +23,14 @@ public interface RoleRepository extends BaseRepository<Role, Integer> {
 	List<Role> findAllRolesWithConditions(@Param("offset") int offset, 
 			@Param("limit") int limit, 
 			@Param("search") String search);
+	
+	@Query("SELECT new com.lab.server.payload.rolepermission.RolePermissionResponse(r.roleName, p.permissionName) " +
+           "FROM Role r JOIN r.permissions p")
+    List<RolePermissionResponse> findAllRolePermissions();
+
+    @Query("SELECT new com.lab.server.payload.rolepermission.RolePermissionResponse(r.roleName, p.permissionName) " +
+           "FROM Role r JOIN r.permissions p " +
+           "WHERE r.roleId = :roleId AND p.permissionId = :permissionId")
+    Optional<RolePermissionResponse> findRolePermission(@Param("roleId") int roleId,
+                                                   @Param("permissionId") int permissionId);
 }

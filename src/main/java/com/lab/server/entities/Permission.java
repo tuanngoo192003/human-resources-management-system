@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Table(name = "permissions", schema = "public")
 @Getter
@@ -25,4 +26,7 @@ public class Permission implements Serializable {
 	
 	@Column(name = "description")
 	private String description;
+	
+	@ManyToMany(mappedBy = "permissions")
+    private List<Role> roles;
 }
