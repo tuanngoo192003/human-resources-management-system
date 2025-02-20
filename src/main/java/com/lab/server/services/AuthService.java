@@ -65,7 +65,7 @@ public class AuthService {
 	        
 		} catch(Exception e) {
 			log.error("{} - {}", e.getClass().getSimpleName(), e.getMessage());
-			throw new Exception(messageSourceHelper.getMessage("error.notfound"));
+			throw new Exception(messageSourceHelper.getMessage("error.notFound"));
 		}
 	}
 		

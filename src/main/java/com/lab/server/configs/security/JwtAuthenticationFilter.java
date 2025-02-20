@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String jwt = jwtProvider.getJwtFromRequest(request);
 
-        String[] publicUrls = {"/auth/.*", "/v3/api-docs/.*", "/v3/api-docs","/swagger-ui/.*", "/swagger-ui.html"};
+        String[] publicUrls = {"/users", "/users/.*", "/v3/api-docs/.*", "/v3/api-docs","/swagger-ui/.*", "/swagger-ui.html"};
 
         for (String publicUrl : publicUrls) {
             if (request.getRequestURI().matches(publicUrl)) {
@@ -47,8 +47,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
              SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {
-            log.error(messageSourceHelper.getMessage("error.notfound"));
-            throw new ServletException("error.token.notfound");
+            log.error(messageSourceHelper.getMessage("error.notFound"));
+            throw new ServletException("error.notFound");
         }
 
         filterChain.doFilter(request, response);
