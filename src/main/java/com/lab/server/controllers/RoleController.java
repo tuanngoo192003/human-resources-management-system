@@ -20,6 +20,7 @@ import com.lab.server.payload.role.RoleRequest;
 import com.lab.server.payload.role.RoleResponse;
 import com.lab.server.services.RoleService;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -70,6 +71,7 @@ public class RoleController {
 	}
 	
 	@PostMapping("/mock")
+	@Hidden
 	public ApiResponse<String> mockApi(@RequestParam("id") int id) throws Exception {
 		String rep = helper.getMessage("success.saved");
 		log.error("Test");
@@ -77,6 +79,7 @@ public class RoleController {
 	}
 	
 	@GetMapping("/pagination/mock")
+	@Hidden
 	public PaginationResponse<RoleResponse> mockApi(
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_PAGE) int page,
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_SIZE) int perpage, 
