@@ -19,45 +19,40 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("")
+@Tag(name = "role-permission")
 public class RolePermissionController {
 	private final RolePermissionService rolePermissionService;
 	
-	@Tag(name = "role-permission")
 	@Operation(summary = "API get all role-permissions")
 	@GetMapping("/role-permissions")
 	public ResponseEntity<?> getAllRolePermissions() {
 		return ResponseEntity.ok(rolePermissionService.getAllRolePermission());
 	}
 	
-	@Tag(name = "role-permission")
 	@Operation(summary = "API find role-permissions by roleId, permissionId")
 	@GetMapping("/role-permissions/{roleId}/{permissionId}")
 	public ResponseEntity<?> findRolePermission(@PathVariable int roleId, @PathVariable int permissionId) {
 		return ResponseEntity.ok(rolePermissionService.geRolePermission(new RolePermissionRequest(roleId, permissionId)));
 	}
 	
-	@Tag(name = "role-permission")
 	@Operation(summary = "API find permissions by roleId")
 	@GetMapping("/roles/{roleId}/permissions")
 	public ResponseEntity<?> findPermissionsByRoleId(@PathVariable int roleId) {
 		return ResponseEntity.ok(rolePermissionService.getPermissionsByRoleId(roleId));
 	}
 	
-	@Tag(name = "role-permission")
 	@Operation(summary = "API find roles by permissions")
 	@GetMapping("/permissions/{permissionId}/roles")
 	public ResponseEntity<?> findRolesByPermissionId(@PathVariable int permissionId) {
 		return ResponseEntity.ok(rolePermissionService.getRolesByPermissionId(permissionId));
 	}
 	
-	@Tag(name = "role-permission")
 	@Operation(summary = "API create permission for role")
 	@PostMapping("/role-permissions")
 	public ResponseEntity<?> createRolePermission(@RequestBody RolePermissionRequest request) {
 		return ResponseEntity.ok(rolePermissionService.createRolePermission(request));
 	}
 	
-	@Tag(name = "role-permission")
 	@Operation(summary = "API delete permission for role")
 	@DeleteMapping("/role-permissions/{roleId}/{permissionId}")
 	public ResponseEntity<?> deleteRolePermission(@PathVariable int roleId, @PathVariable int permissionId) {

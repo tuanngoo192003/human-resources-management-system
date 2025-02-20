@@ -23,10 +23,10 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/permissions")
+@Tag(name = "permisison")
 public class PermissionController {
 	private final PermissionService permissionService;
 	
-	@Tag(name = "permisison")
 	@Operation(summary = "API get all permissions")
 	@GetMapping("")
 	public ResponseEntity<?> getAllPermissions(
@@ -36,28 +36,24 @@ public class PermissionController {
 		return ResponseEntity.ok(permissionService.findAll(page,perpage, search));
 	}
 	
-	@Tag(name = "permisison")
 	@Operation(summary = "API get permisison by id")
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getPermissionById(@PathVariable int id) {
 		return ResponseEntity.ok(permissionService.findPermissionById(id));
 	}
 	
-	@Tag(name = "permisison")
 	@Operation(summary = "API create new permisison")
 	@PostMapping("")
 	public ResponseEntity<?> createPermission(@RequestBody PermissionRequest request) {
 		return ResponseEntity.ok(permissionService.createPermission(request));
 	}
 	
-	@Tag(name = "permisison")
 	@Operation(summary = "API update permisison by id")
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updatePermissionById(@PathVariable int id, @RequestBody PermissionRequest request) {
 		return ResponseEntity.ok(permissionService.updatePermissionById(id,request));
 	}
 	
-	@Tag(name = "permisison")
 	@Operation(summary = "API delete permisison by id")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deletePermissionById(@PathVariable int id) {

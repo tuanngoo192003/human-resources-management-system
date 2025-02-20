@@ -30,40 +30,36 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/roles")
+@Tag(name = "role")
 public class RoleController {
 
 	private final RoleService roleService;
 	private final MessageSourceHelper helper;
 	
-	@Tag(name = "role")
 	@Operation(summary = "API get all roles")
 	@GetMapping("")
 	public ResponseEntity<?> getAllRoles() {
 		return ResponseEntity.ok(roleService.findAll());
 	}
 	
-	@Tag(name = "role")
 	@Operation(summary = "API get role by id")
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getRoleById(@PathVariable int id) {
 		return ResponseEntity.ok(roleService.findRoleById(id));
 	}
 	
-	@Tag(name = "role")
 	@Operation(summary = "API create new role")
 	@PostMapping("")
 	public ResponseEntity<?> createRole(@RequestBody RoleRequest request) {
 		return ResponseEntity.ok(roleService.createRole(request));
 	}
 	
-	@Tag(name = "role")
 	@Operation(summary = "API update role by id")
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateRoleById(@PathVariable int id, @RequestBody RoleRequest request) {
 		return ResponseEntity.ok(roleService.updateRoleById(id,request));
 	}
 	
-	@Tag(name = "role")
 	@Operation(summary = "API delete role by id")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteRoleById(@PathVariable int id) {
