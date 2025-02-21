@@ -53,6 +53,11 @@ public class UserController {
 		return new ApiResponse<Object>(true, messageHelper.getMessage("notification.logoutSucessfully"));
 	}
 	
+	@GetMapping("/me")
+	public ApiResponse<UserResponse> getCurrentUser(){
+		return new ApiResponse<>(true, userService.getCurrentUser());
+	}
+	
 	@Operation(summary = "API get all user")
 	@GetMapping
     public PaginationResponse<UserResponse> getAllUsers(

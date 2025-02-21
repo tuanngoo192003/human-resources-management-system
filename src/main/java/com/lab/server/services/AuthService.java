@@ -12,21 +12,21 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.lab.server.caches.ICacheData;
 import com.lab.lib.constants.Constants;
 import com.lab.lib.enumerated.Language;
 import com.lab.server.configs.language.MessageSourceHelper;
 import com.lab.server.configs.security.JwtProvider;
+import com.lab.server.configs.security.SecurityHelper;
 import com.lab.server.entities.User;
 import com.lab.server.payload.auth.LoginRequest;
 import com.lab.server.payload.auth.LoginResponse;
 import com.lab.server.payload.auth.TokenResponse;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Log4j2
@@ -35,9 +35,11 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthService {
 	
 	private final UserService userService;
+	private final SecurityHelper securityHelper;
 	private final AuthenticationManager authenticationManager;
 	private final JwtProvider jwtProvider;
 	private final MessageSourceHelper messageSourceHelper;
+	private final ICacheData<String> caches;
 	
 	public LoginResponse login(LoginRequest request) throws Exception {
 		User user;
@@ -73,7 +75,11 @@ public class AuthService {
 	}
 	
 	public void logout(HttpServletRequest request) throws BadRequestException {
+		String username = securityHelper.getCurrentUserLogin();
 		SecurityContextHolder.clearContext();
+		String jwt = jwtProvider.getJwtFromRequest(request);
+	
+		caches.save(jwt, username, jwtProvider.getExpirationTime());
 	}
 		
 	

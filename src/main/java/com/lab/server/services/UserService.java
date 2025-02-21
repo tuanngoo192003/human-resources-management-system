@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.lab.lib.api.ApiResponse;
 import com.lab.lib.api.PaginationResponse;
 import com.lab.lib.enumerated.SystemRole;
 import com.lab.lib.exceptions.BadRequestException;
@@ -214,6 +215,19 @@ public class UserService extends BaseService<User, Integer> {
         repository.delete(user);
         return "Delete user " + id + " successfully!";
     }
+    
+    @Transactional(readOnly = true)
+    public UserResponse getCurrentUser() {
+		String username = securityHelper.getCurrentUserLogin();
+		User user = findByFields(Map.of("username", username));
+		
+		 return UserResponse.builder()
+	                .userId(user.getUserId())
+	                .username(user.getUsername())
+	                .email(user.getEmail())
+	                .roleName(user.getRoleId().getRoleName().name())
+	                .build();
+	}
 
 	private UserResponse responseBuilder(UserModel user) {
         return UserResponse.builder()
@@ -223,4 +237,6 @@ public class UserService extends BaseService<User, Integer> {
                 .roleName(user.getRoleName())
                 .build();
     }
+
+	
 }

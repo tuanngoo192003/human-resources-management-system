@@ -15,6 +15,12 @@ jwt:
   secret-key: y1mPi8MopfsX6Fzthj3FkXsX2HNk05dd61hOXZlf6aU=y1mPi8MopfsX6Fzthj3FkXsX2HNk05dd61hOXZlf6aU=
   refresh-token:
     expiration: 10080
+redis:
+  host: 127.0.0.1
+  port: 6379
+  database: 0
+  password: 123456789
+  timeout: 10000 
 springdoc:
   api-docs:
     enabled: true  

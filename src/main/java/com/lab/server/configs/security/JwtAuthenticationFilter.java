@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.lab.server.caches.ICacheData;
 import com.lab.server.configs.language.MessageSourceHelper;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
     private final UserDetailsService userDetailsService;
     private final MessageSourceHelper messageSourceHelper;
+    private final ICacheData<String> caches;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -39,6 +41,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
         	 String username = jwtProvider.getUsernameFromToken(jwt);
+        	 
+        	 String existedUsernameToken = caches.find(jwt);
+        	 if(existedUsernameToken != null) {
+        		 response.sendError(HttpServletResponse.SC_FORBIDDEN, messageSourceHelper.getMessage("warning.tokenBanned"));
+        		 return;
+        	 } 
 
              UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
@@ -48,7 +56,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
              SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {
             log.error(messageSourceHelper.getMessage("error.notFound"));
-            throw new ServletException("error.notFound");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, messageSourceHelper.getMessage("warning.accessDenied"));
+            return;
         }
 
         filterChain.doFilter(request, response);

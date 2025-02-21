@@ -73,5 +73,9 @@ public class JwtProvider {
 		}
 		return null;
 	}
+	
+	public long getExpirationTime() {
+		return this.expirationTime;
+	}
 
 }
