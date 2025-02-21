@@ -51,17 +51,22 @@ public class PermissionService extends BaseService<Permission, Integer>{
 	@Transactional(readOnly = true)
 	public PermissionResponse findPermissionById(int id) {
 		Permission permission= repository.findById(id).orElse(null);
+		if(permission != null)
 		return new PermissionResponse(permission.getPermissionId(), permission.getPermissionName(), permission.getDescription());
+		else throw new RuntimeException("Not found permission");
 	}
 	
 	@Transactional(readOnly = true)
 	public List<RoleResponse> getRoleListByPermissionId(int id) {
 		Permission permission = repository.findById(id).orElse(null);
-		List<RoleResponse> list = new ArrayList<RoleResponse>();
-		permission.getRoles().forEach(r -> {
-			list.add(new RoleResponse(r.getRoleId(),r.getRoleName().toString(),r.getDescription()));
-		});
-		return list;
+		if(permission != null) {
+			List<RoleResponse> list = new ArrayList<RoleResponse>();
+			permission.getRoles().forEach(r -> {
+				list.add(new RoleResponse(r.getRoleId(),r.getRoleName().toString(),r.getDescription()));
+			});
+			return list;			
+		}
+		else throw new RuntimeException("Not found permission");
 	}
 	
 	public PermissionResponse createPermission(PermissionRequest request) {
@@ -74,17 +79,23 @@ public class PermissionService extends BaseService<Permission, Integer>{
 	
 	public PermissionResponse updatePermissionById(int id, PermissionRequest request) {
 		Permission permission= repository.findById(id).orElse(null);
-		if(!request.getName().isEmpty())
-		permission.setPermissionName(request.getName());
-		if(!request.getDescription().isEmpty())
-		permission.setDescription(request.getDescription());
-		repository.save(permission);
-		return new PermissionResponse(permission.getPermissionId(), permission.getPermissionName(), permission.getDescription());
+		if(permission != null) {
+			if(!request.getName().isEmpty())
+			permission.setPermissionName(request.getName());
+			if(!request.getDescription().isEmpty())
+			permission.setDescription(request.getDescription());
+			repository.save(permission);
+			return new PermissionResponse(permission.getPermissionId(), permission.getPermissionName(), permission.getDescription());
+		}
+		else throw new RuntimeException("Not found permission");
 	}
 	
 	public String deletePermissionById(int id) {
 		Permission permission= repository.findById(id).orElse(null);
+		if(permission != null) {
 		repository.delete(permission);
 		return "Delete permission "+id+" successfully!";
+		}
+		else throw new RuntimeException("Not found permission");
 	}	
 }

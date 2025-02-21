@@ -64,7 +64,12 @@ public class RoleService extends BaseService<Role, Integer> {
 	@Transactional(readOnly = true)
 	public RoleResponse findRoleById(int id) {
 		Role role= repository.findById(id).orElse(null);
-		return new RoleResponse(role.getRoleId(),role.getRoleName().toString(), role.getDescription());
+		if(role!= null) {
+			return new RoleResponse(role.getRoleId(),role.getRoleName().toString(), role.getDescription());			
+		}
+		else {
+			throw new RuntimeException("Role with ID " + id + " not found.");
+		}
 	}
 	
 	public RoleResponse createRole(RoleRequest request) {
@@ -77,18 +82,27 @@ public class RoleService extends BaseService<Role, Integer> {
 	
 	public RoleResponse updateRoleById(int id, RoleRequest request) {
 		Role role= repository.findById(id).orElse(null);
-		if(!request.getName().isEmpty())
-		role.setRoleName(SystemRole.fromStringToEnum(request.getName()));
-		if(!request.getDescription().isEmpty())
-		role.setDescription(request.getDescription());
-		repository.save(role);
-		return new RoleResponse(role.getRoleId(),role.getRoleName().toString(), role.getDescription());
+		if(role!=null) {
+			if(!request.getName().isEmpty())
+			role.setRoleName(SystemRole.fromStringToEnum(request.getName()));
+			if(!request.getDescription().isEmpty())
+			role.setDescription(request.getDescription());
+			repository.save(role);
+			return new RoleResponse(role.getRoleId(),role.getRoleName().toString(), role.getDescription());
+		}
+		else {
+			throw new RuntimeException("Employee with ID " + id + " not found.");
+		}
 	}
 	
 	public String deleteRoleById(int id) {
 		Role role= repository.findById(id).orElse(null);
-		repository.delete(role);
-		return "Delete role "+id+" successfully!";
+		if(role!= null) {
+			repository.delete(role);
+			return "Delete role "+id+" successfully!";
+		}
+		else
+			throw new RuntimeException("Employee with ID " + id + " not found.");
 	}
 	
 }

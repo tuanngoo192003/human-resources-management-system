@@ -3,6 +3,7 @@ package com.lab.server.controllers;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -60,6 +61,7 @@ public class UserController {
 	
 	@Operation(summary = "API get all user")
 	@GetMapping
+	@PreAuthorize("hasAuthority('read_user')")
     public PaginationResponse<UserResponse> getAllUsers(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int perPage,
@@ -68,21 +70,25 @@ public class UserController {
     }
 	@Operation(summary = "API get user by ID")
 	@GetMapping("/{id}")
+	@PreAuthorize("hasAuthority('read_user')")
     public ResponseEntity<UserResponse> getUserById(@PathVariable int id) {
         return ResponseEntity.ok(userService.findUserById(id));
     }
 	@Operation(summary = "API create user")
     @PostMapping
+    @PreAuthorize("hasAuthority('create_user')")
     public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(request));
     }
 	@Operation(summary = "API update user")
     @PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('update_user')")
     public ResponseEntity<UserResponse> updateUser(@PathVariable int id, @RequestBody @Valid UserRequest request) {
         return ResponseEntity.ok(userService.updateUserById(id, request));
     }
 	@Operation(summary = "API delete user")
     @DeleteMapping("/{id}")
+	@PreAuthorize("hasAuthority('delete_user')")
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
         return ResponseEntity.ok(userService.deleteUserById(id));
     }

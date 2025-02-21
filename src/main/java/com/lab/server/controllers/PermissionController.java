@@ -2,6 +2,8 @@ package com.lab.server.controllers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.lab.lib.api.ApiResponse;
 import com.lab.lib.utils.PagingUtil;
 import com.lab.server.payload.permission.PermissionRequest;
 import com.lab.server.services.PermissionService;
@@ -24,39 +27,45 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/permissions")
 @Tag(name = "permisison")
+@Validated
 public class PermissionController {
 	private final PermissionService permissionService;
 	
 	@Operation(summary = "API get all permissions")
 	@GetMapping("")
+	@PreAuthorize("hasAuthority('read_permission')")
 	public ResponseEntity<?> getAllPermissions(
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_PAGE) int page,
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_SIZE) int perpage, 
 			@RequestParam(required = false, defaultValue = StringUtils.EMPTY) String search){
-		return ResponseEntity.ok(permissionService.findAll(page,perpage, search));
+		return ResponseEntity.ok(new ApiResponse<>(true, permissionService.findAll(page,perpage, search)));
 	}
 	
 	@Operation(summary = "API get permisison by id")
 	@GetMapping("/{id}")
+	@PreAuthorize("hasAuthority('read_permission')")
 	public ResponseEntity<?> getPermissionById(@PathVariable int id) {
-		return ResponseEntity.ok(permissionService.findPermissionById(id));
+		return ResponseEntity.ok(new ApiResponse<>(true, permissionService.findPermissionById(id)));
 	}
 	
 	@Operation(summary = "API create new permisison")
 	@PostMapping("")
+	@PreAuthorize("hasAuthority('create_permission')")
 	public ResponseEntity<?> createPermission(@RequestBody PermissionRequest request) {
-		return ResponseEntity.ok(permissionService.createPermission(request));
+		return ResponseEntity.ok(new ApiResponse<>(true, permissionService.createPermission(request)));
 	}
 	
 	@Operation(summary = "API update permisison by id")
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('update_permission')")
 	public ResponseEntity<?> updatePermissionById(@PathVariable int id, @RequestBody PermissionRequest request) {
-		return ResponseEntity.ok(permissionService.updatePermissionById(id,request));
+		return ResponseEntity.ok(new ApiResponse<>(true, permissionService.updatePermissionById(id,request)));
 	}
 	
 	@Operation(summary = "API delete permisison by id")
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAuthority('delete_permission')")
 	public ResponseEntity<?> deletePermissionById(@PathVariable int id) {
-		return ResponseEntity.ok(permissionService.deletePermissionById(id));
+		return ResponseEntity.ok(new ApiResponse<>(true, permissionService.deletePermissionById(id)));
 	}
 }
