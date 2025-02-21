@@ -4,15 +4,12 @@ import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.StringUtils;
 
-import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
@@ -29,7 +26,6 @@ public class JwtProvider {
     @Value("${jwt.secret-key}")
 	private String secretKey;
 	
-	private final UserDetailsService userDetailsService;
 	private final String AUTH_PREFIX = "Bearer ";
 	private final String HEADER = "Authorization";
 
@@ -76,6 +72,10 @@ public class JwtProvider {
 			return bearerToken.substring(7);
 		}
 		return null;
+	}
+	
+	public long getExpirationTime() {
+		return this.expirationTime;
 	}
 
 }

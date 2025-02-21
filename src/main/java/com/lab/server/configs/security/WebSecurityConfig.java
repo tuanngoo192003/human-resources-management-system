@@ -22,6 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.lab.server.caches.ICacheData;
 import com.lab.server.configs.language.DetectLanguageInterceptor;
 import com.lab.server.configs.language.MessageSourceHelper;
 
@@ -35,6 +36,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     private final UserDetailsService userDetailsService;
     private final DetectLanguageInterceptor languageInterceptor;
     private final MessageSourceHelper messageSourceHelper;
+    private final ICacheData<String> caches;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -50,7 +52,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(){
-        return new JwtAuthenticationFilter(jwtProvider, userDetailsService, messageSourceHelper);
+        return new JwtAuthenticationFilter(jwtProvider, userDetailsService, messageSourceHelper, caches);
     }
 
     @Override
