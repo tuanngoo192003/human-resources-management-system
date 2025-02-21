@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String jwt = jwtProvider.getJwtFromRequest(request);
 
-        String[] publicUrls = {"/users", "/users/.*", "/v3/api-docs/.*", "/v3/api-docs","/swagger-ui/.*", "/swagger-ui.html"};
+        String[] publicUrls = {"/users/login", "/v3/api-docs/.*", "/v3/api-docs","/swagger-ui/.*", "/swagger-ui.html"};
 
         for (String publicUrl : publicUrls) {
             if (request.getRequestURI().matches(publicUrl)) {

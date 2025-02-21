@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.security.core.Authentication;
+import org.apache.coyote.BadRequestException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +21,8 @@ import com.lab.server.payload.auth.LoginRequest;
 import com.lab.server.payload.auth.LoginResponse;
 import com.lab.server.payload.auth.TokenResponse;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -67,6 +70,10 @@ public class AuthService {
 			log.error("{} - {}", e.getClass().getSimpleName(), e.getMessage());
 			throw new Exception(messageSourceHelper.getMessage("error.notFound"));
 		}
+	}
+	
+	public void logout(HttpServletRequest request) throws BadRequestException {
+		SecurityContextHolder.clearContext();
 	}
 		
 	

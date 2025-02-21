@@ -1,5 +1,6 @@
 package com.lab.server.controllers;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.lab.lib.api.ApiResponse;
 import com.lab.lib.api.PaginationResponse;
+import com.lab.server.configs.language.MessageSourceHelper;
 import com.lab.server.payload.auth.LoginRequest;
 import com.lab.server.payload.auth.LoginResponse;
 import com.lab.server.payload.user.UserRequest;
@@ -24,6 +26,7 @@ import com.lab.server.services.AuthService;
 import com.lab.server.services.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -37,19 +40,19 @@ public class UserController {
 	
 	private final AuthService authService;
 	private final UserService userService;
+	private final MessageSourceHelper messageHelper;
 
 	@PostMapping("/login")
 	public ApiResponse<LoginResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
 		return new ApiResponse<LoginResponse>(true, authService.login(loginRequest));
 	}
 	
-	@GetMapping("/secured-endpoint")
-	public ResponseEntity<String> securedEndpoint() {
-	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	    log.info("Current user: {}", authentication);
-	    return ResponseEntity.ok("Success!");
-	    
+	@PostMapping("/logout")
+	public ApiResponse<Object> logout(HttpServletRequest request) throws BadRequestException {
+		authService.logout(request);
+		return new ApiResponse<Object>(true, messageHelper.getMessage("notification.logoutSucessfully"));
 	}
+	
 	@Operation(summary = "API get all user")
 	@GetMapping
     public PaginationResponse<UserResponse> getAllUsers(
