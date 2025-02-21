@@ -32,14 +32,14 @@ public class DepartmentController {
 	private final DepartmentService departmentService;
 	
 	@GetMapping("/{id}")
-	@PreAuthorize("hasAuthority('read_deparment')")
+	@PreAuthorize("hasAuthority('read_department')")
 	public ApiResponse<DepartmentResponse> getDepartmentById(@PathVariable("id") int id){
 		DepartmentResponse response = departmentService.getDepartmentById(id);
 		return new ApiResponse<DepartmentResponse>(true, response);
 	}
 	
 	@GetMapping
-	@PreAuthorize("hasAuthority('read_deparment')")
+	@PreAuthorize("hasAuthority('read_department')")
 	public PaginationResponse<DepartmentResponse> getAllDepartmentWithConditions(
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_PAGE) int page,
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_SIZE) int perpage, 
@@ -48,21 +48,21 @@ public class DepartmentController {
 	}
 	
 	@PostMapping
-	@PreAuthorize("hasAuthority('create_deparment')")
+	@PreAuthorize("hasAuthority('create_department')")
 	public ApiResponse<DepartmentResponse> createDepartment(@Valid @RequestBody DepartmentRequest request){
 		DepartmentResponse response = departmentService.createDepartment(request);
 		return new ApiResponse<DepartmentResponse>(true, response);
 	}
 	
 	@PutMapping("/{id}")
-	@PreAuthorize("hasAuthority('update_deparment')")
+	@PreAuthorize("hasAuthority('update_department')")
 	public ApiResponse<DepartmentResponse> createDepartment(@PathVariable("id") int id, @Valid @RequestBody DepartmentRequest request) throws Exception {
 		DepartmentResponse response = departmentService.saveDepartment(id, request);
 		return new ApiResponse<DepartmentResponse>(true, response);
 	}
 	
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasAuthority('delete_deparment')")
+	@PreAuthorize("hasAuthority('delete_department')")
 	public ApiResponse<String> deleteDepartment(@PathVariable("id") int id) throws Exception {
 		departmentService.deleteDepartment(id);
 		return new ApiResponse<String>(true);
