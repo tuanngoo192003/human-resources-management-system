@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.lab.lib.api.PaginationResponse;
 import com.lab.lib.enumerated.SystemRole;
 import com.lab.lib.exceptions.BadRequestException;
+import com.lab.lib.exceptions.UnAuthorizationException;
 import com.lab.lib.repository.BaseRepository;
 import com.lab.lib.service.BaseService;
 import com.lab.lib.utils.PagingUtil;
@@ -76,16 +77,15 @@ public class UserService extends BaseService<User, Integer> {
     		userList = repository.findAllUsersWithConditionsForAdmin(offset, perPage, search);
     		break;
     	case "MANAGER":
-    		System.out.println("Tao o day");
     		totalRecord = repository.countAllUsersWithConditionsForManager(search);
     		offset = PagingUtil.getOffset(page, perPage);
     		totalPage = PagingUtil.getTotalPage(totalRecord, perPage);
     		userList = repository.findAllUsersWithConditionsForManager(offset, perPage, search);
     		break;
     	case "EMPLOYEE":
-    		throw new BadRequestException(messageSourceHelper.getMessage("warning.accessDenied"));
+    		throw new UnAuthorizationException(messageSourceHelper.getMessage("warning.accessDenied"));
     	default:
-    		throw new BadRequestException(messageSourceHelper.getMessage("warning.accessDenied"));
+    		throw new UnAuthorizationException(messageSourceHelper.getMessage("warning.accessDenied"));
     	}
     	
 		List<UserResponse> response = new ArrayList<>();
@@ -116,10 +116,10 @@ public class UserService extends BaseService<User, Integer> {
     		user = repository.findUserByIdForManager(id);
     		break;
     	case "EMPLOYEE":
-    		if(currentUserLogin.getUserId()!=id) throw new BadRequestException("warning.accessDenied");
+    		if(currentUserLogin.getUserId()!=id) throw new UnAuthorizationException(messageSourceHelper.getMessage("warning.accessDenied"));
     		user = repository.findUserById(id);
     	default:
-    		throw new BadRequestException("warning.accessDenied");
+    		throw new UnAuthorizationException(messageSourceHelper.getMessage("warning.accessDenied"));
     	}
     	
         return new UserResponse(user.getUserId(),user.getUsername(), user.getEmail(), user.getRoleName());
@@ -129,14 +129,21 @@ public class UserService extends BaseService<User, Integer> {
     public UserResponse createUser(UserRequest request) {
     	User currentUserLogin = findByFields(Map.of("username", securityHelper.getCurrentUserLogin()));
     	String currentUserRole = currentUserLogin.getRoleId().getRoleName().name();
-    	EmployeeModel currentUserEmployee = employeeRepository.findEmployeeByUserId(currentUserLogin.getUserId());
+    	//EmployeeModel currentUserEmployee = employeeRepository.findEmployeeByUserId(currentUserLogin.getUserId());
     	
     	if(currentUserRole.equals(SystemRole.EMPLOYEE.name())) {
-    		throw new BadRequestException("warning.accessDenied");
+    		throw new UnAuthorizationException(messageSourceHelper.getMessage("warning.accessDenied"));
     	}
     	
     	Role role = roleRepository.findById(request.getRoleId())
-                .orElseThrow(() -> new BadRequestException("error.notFound"));
+                .orElseThrow(() -> new BadRequestException(messageSourceHelper.getMessage("error.notFound")));
+    	
+    	if(role.getRoleName().equals(SystemRole.ADMIN)) {
+    		if(!currentUserRole.equals(SystemRole.ADMIN.name())) {
+    			throw new UnAuthorizationException(messageSourceHelper.getMessage("warning.accessDenied"));
+    		}
+    	}
+    	
         User user = new User();
         user.setUsername(request.getUsername());
         
@@ -152,7 +159,7 @@ public class UserService extends BaseService<User, Integer> {
         			.firstName(request.getFirstName())
         			.lastName(request.getLastName())
         			.dateOfBirth(request.getDateOfBirth())
-        			.departmentId(departmentRepository.findById(currentUserEmployee.getDepartmentId()).orElse(null))
+        			.departmentId(departmentRepository.findById(request.getDepartmentId()).orElse(null))
         			.positionId(positionRepository.findById(request.getPositionId()).orElse(null))
         			.hireDate(LocalDate.now())
         			.userId(user)
@@ -181,15 +188,15 @@ public class UserService extends BaseService<User, Integer> {
     		if(currentUserEmployee.getDepartmentId() != updatingEmployee.getDepartmentId()) throw new BadRequestException("warning.accessDenied");
     		break;
     	case "EMPLOYEE":
-    		throw new BadRequestException("warning.accessDenied");
+    		throw new UnAuthorizationException(messageSourceHelper.getMessage("warning.accessDenied"));
     	default:
-    		throw new BadRequestException("warning.accessDenied");
+    		throw new UnAuthorizationException(messageSourceHelper.getMessage("warning.accessDenied"));
     	}
     	
     	Role role = roleRepository.findById(request.getRoleId())
-                .orElseThrow(() -> new BadRequestException("error.notFound"));
+                .orElseThrow(() -> new BadRequestException(messageSourceHelper.getMessage("error.notFound")));
         User user = repository.findById(id).orElse(null);
-        if (user == null) throw new BadRequestException("error.notFound");
+        if (user == null) throw new BadRequestException(messageSourceHelper.getMessage("error.notFound"));
 
         user.setUsername(request.getUsername());
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
@@ -209,9 +216,15 @@ public class UserService extends BaseService<User, Integer> {
     @Transactional(rollbackFor = BadRequestException.class)
     public String deleteUserById(int id) {
     	User currentUserLogin = findByFields(Map.of("username", securityHelper.getCurrentUserLogin()));
-    	if(!currentUserLogin.getRoleId().getRoleName().equals(SystemRole.ADMIN)) throw new BadRequestException("warning.accessDenied");
+    	if(!currentUserLogin.getRoleId().getRoleName().equals(SystemRole.ADMIN)) 
+    		throw new UnAuthorizationException(messageSourceHelper.getMessage("warning.accessDenied"));
         User user = repository.findById(id).orElse(null);
         if (user == null) return "User not found!";
+        
+        if(user.getRoleId().getRoleName().equals(SystemRole.ADMIN)) {
+        	throw new BadRequestException(messageSourceHelper.getMessage("error.deleteAdmin"));
+        } 
+        
         Employee userEmployee = employeeService.findByFields(Map.of("userId", currentUserLogin.getUserId()));
         if (userEmployee != null) employeeRepository.delete(userEmployee);
         
