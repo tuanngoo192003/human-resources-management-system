@@ -4,17 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.lab.lib.api.ApiResponse;
 import com.lab.lib.api.PaginationResponse;
 import com.lab.lib.enumerated.SystemRole;
 import com.lab.lib.exceptions.BadRequestException;
-import com.lab.lib.exceptions.UnAuthorizationException;
 import com.lab.lib.repository.BaseRepository;
 import com.lab.lib.service.BaseService;
 import com.lab.lib.utils.PagingUtil;
@@ -23,7 +19,6 @@ import com.lab.server.configs.security.SecurityHelper;
 import com.lab.server.entities.Employee;
 import com.lab.server.entities.Role;
 import com.lab.server.entities.User;
-import com.lab.server.payload.role.RoleResponse;
 import com.lab.server.payload.user.UserRequest;
 import com.lab.server.payload.user.UserResponse;
 import com.lab.server.repositories.DepartmentRepository;
@@ -126,7 +121,7 @@ public class UserService extends BaseService<User, Integer> {
         return new UserResponse(user.getUserId(),user.getUsername(), user.getEmail(), user.getRoleName());
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = BadRequestException.class)
     public UserResponse createUser(UserRequest request) {
     	User currentUserLogin = findByFields(Map.of("username", securityHelper.getCurrentUserLogin()));
     	String currentUserRole = currentUserLogin.getRoleId().getRoleName().name();
@@ -149,7 +144,7 @@ public class UserService extends BaseService<User, Integer> {
 
         user = repository.save(user);
         
-        if(currentUserRole.equals(SystemRole.EMPLOYEE.name())) {
+        if(currentUserRole.equals(SystemRole.MANAGER.name())) {
         	employeeRepository.save(Employee.builder()
         			.firstName(request.getFirstName())
         			.lastName(request.getLastName())

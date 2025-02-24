@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lab.lib.api.PaginationResponse;
+import com.lab.lib.exceptions.BadRequestException;
 import com.lab.lib.repository.BaseRepository;
 import com.lab.lib.service.BaseService;
 import com.lab.lib.utils.PagingUtil;
@@ -79,8 +80,8 @@ public class PositionService extends BaseService<Position, Integer>{
 			Position position = findByFields(Map.of("positionId", id));
 			repository.delete(position);
 		} catch(Exception e) {
-			log.error(messageHelper.getMessage("error.data.notfound"));
-			throw new Exception("error.data.notfound");
+			log.error(messageHelper.getMessage("error.positionNotFound", id));
+			throw new BadRequestException(messageHelper.getMessage("error.positionNotFound", id));
 		}
 	}
 	

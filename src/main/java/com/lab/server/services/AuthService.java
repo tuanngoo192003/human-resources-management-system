@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.security.core.Authentication;
-import org.apache.coyote.BadRequestException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.lab.server.caches.ICacheData;
 import com.lab.lib.constants.Constants;
 import com.lab.lib.enumerated.Language;
+import com.lab.lib.exceptions.BadRequestException;
 import com.lab.server.configs.language.MessageSourceHelper;
 import com.lab.server.configs.security.JwtProvider;
 import com.lab.server.configs.security.SecurityHelper;
@@ -41,7 +41,7 @@ public class AuthService {
 	private final MessageSourceHelper messageSourceHelper;
 	private final ICacheData<String> caches;
 	
-	public LoginResponse login(LoginRequest request) throws Exception {
+	public LoginResponse login(LoginRequest request) throws BadRequestException {
 		User user;
 		if(!isMail(request.getIdentifier())) {
 			user = userService.findByFields(Map.of("username", request.getIdentifier()));
@@ -52,7 +52,6 @@ public class AuthService {
 		try {
 			Authentication authentication = authenticationManager.authenticate(
 	                new UsernamePasswordAuthenticationToken(user.getUsername(), request.getPassword()));
-		
 	        SecurityContextHolder.getContext().setAuthentication(authentication);
 	  
 	        final String accessToken = jwtProvider.generateToken(user.getUsername());
@@ -70,7 +69,7 @@ public class AuthService {
 	        
 		} catch(Exception e) {
 			log.error("{} - {}", e.getClass().getSimpleName(), e.getMessage());
-			throw new Exception(messageSourceHelper.getMessage("error.notFound"));
+			throw new BadRequestException(messageSourceHelper.getMessage("error.userNotFound"));
 		}
 	}
 	

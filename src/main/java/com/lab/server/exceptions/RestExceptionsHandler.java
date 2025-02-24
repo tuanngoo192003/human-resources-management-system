@@ -15,7 +15,6 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -24,11 +23,11 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.lab.lib.api.ApiResponse;
+import com.lab.lib.exceptions.BadRequestException;
 import com.lab.server.configs.language.MessageSourceHelper;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @RestControllerAdvice
@@ -52,6 +51,17 @@ public class RestExceptionsHandler extends ResponseEntityExceptionHandler {
 		log.error(detailMessage, exception);
 		ApiResponse<String> rsp = new ApiResponse<String>(false, message, detailMessage, HttpStatus.INTERNAL_SERVER_ERROR, moreInformation);
 		return new ResponseEntity<>(rsp, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(BadRequestException.class)
+	public ResponseEntity<Object> handleBadRequestException(BadRequestException bre) {
+		String message = getMessage("error.badRequestException");
+		String detailMessage = bre.getLocalizedMessage();
+        String moreInformation = "http://localhost:8080/api/v1/exception/400";
+        
+        log.error(detailMessage, bre);
+		ApiResponse<String> rsp = new ApiResponse<String>(false, message, detailMessage, HttpStatus.BAD_REQUEST, moreInformation);
+		return new ResponseEntity<>(rsp, HttpStatus.BAD_REQUEST);
 	}
 	
 	/* Url handler not found exception */

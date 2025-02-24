@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lab.lib.api.PaginationResponse;
 import com.lab.lib.enumerated.SystemRole;
+import com.lab.lib.exceptions.BadRequestException;
 import com.lab.lib.repository.BaseRepository;
 import com.lab.lib.service.BaseService;
 import com.lab.lib.utils.PagingUtil;
@@ -68,7 +69,7 @@ public class RoleService extends BaseService<Role, Integer> {
 			return new RoleResponse(role.getRoleId(),role.getRoleName().toString(), role.getDescription());			
 		}
 		else {
-			throw new RuntimeException("Role with ID " + id + " not found.");
+			throw new BadRequestException("Role with ID " + id + " not found.");
 		}
 	}
 	
@@ -91,7 +92,7 @@ public class RoleService extends BaseService<Role, Integer> {
 			return new RoleResponse(role.getRoleId(),role.getRoleName().toString(), role.getDescription());
 		}
 		else {
-			throw new RuntimeException("Employee with ID " + id + " not found.");
+			throw new BadRequestException("Employee with ID " + id + " not found.");
 		}
 	}
 	
@@ -102,7 +103,7 @@ public class RoleService extends BaseService<Role, Integer> {
 			return "Delete role "+id+" successfully!";
 		}
 		else
-			throw new RuntimeException("Employee with ID " + id + " not found.");
+			throw new BadRequestException("Employee with ID " + id + " not found.");
 	}
 	
 }

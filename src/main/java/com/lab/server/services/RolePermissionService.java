@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.lab.lib.exceptions.BadRequestException;
 import com.lab.lib.repository.BaseRepository;
 import com.lab.lib.service.BaseService;
+import com.lab.server.configs.language.MessageSourceHelper;
 import com.lab.server.entities.Permission;
 import com.lab.server.entities.Role;
 import com.lab.server.payload.permission.PermissionResponse;
@@ -22,14 +24,18 @@ import com.lab.server.repositories.RoleRepository;
 @Service
 @Transactional
 public class RolePermissionService extends BaseService<Role, Integer>{
-	private final RoleRepository repository;
-	@Autowired
-	private PermissionService permissionService;
-	@Autowired
-	private PermissionRepository permissionRepository;
 	
-	protected RolePermissionService(BaseRepository<Role, Integer> repository) {
+	private final RoleRepository repository;
+	private final PermissionService permissionService;
+	private final PermissionRepository permissionRepository;
+	private final MessageSourceHelper messageSourceHelper;
+	
+	protected RolePermissionService(BaseRepository<Role, Integer> repository,PermissionService permissionService,
+			PermissionRepository permissionRepository, MessageSourceHelper messageSourceHelper) {
 		super(repository);
+		this.permissionRepository = permissionRepository;
+		this.permissionService = permissionService;
+		this.messageSourceHelper = messageSourceHelper;
 		this.repository = (RoleRepository) repository;
 	}
 	
@@ -51,7 +57,7 @@ public class RolePermissionService extends BaseService<Role, Integer>{
 		repository.save(role);
 		return new RolePermissionResponse(role.getRoleName().toString(), permission.getPermissionName());
 		}
-		else throw new RuntimeException("Not found exception");
+		else throw new BadRequestException(messageSourceHelper.getMessage("error.roleNotFound", request.getRoleId()));
 	}
 	
 	public void deleteRolePermission(RolePermissionRequest request) {
@@ -61,7 +67,7 @@ public class RolePermissionService extends BaseService<Role, Integer>{
 			role.getPermissions().remove(permission);
 			repository.save(role);
 		}
-		else throw new RuntimeException("Not found exception");			
+		else throw new BadRequestException(messageSourceHelper.getMessage("error.deleteRolePermission", request.getRoleId(), request.getPermissionId()));			
 	}
 	
 	public List<RoleResponse> getRolesByPermissionId(int id) {
