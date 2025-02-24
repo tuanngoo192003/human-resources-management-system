@@ -194,7 +194,7 @@ public class RestExceptionsHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ MethodArgumentTypeMismatchException.class })
     public ResponseEntity<ApiResponse<String>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException exception) {
 
-            String message = exception.getName() + " " + getMessage("MethodArgumentTypeMismatchException.message") 
+            String message = exception.getName() + " " + getMessage("error.MethodArgumentTypeMismatchException") 
                     + exception.getRequiredType().getName();
             String detailMessage = exception.getLocalizedMessage();
             String moreInformation = "http://localhost:8080/api/v1/exception/400";
