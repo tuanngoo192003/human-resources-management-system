@@ -12,6 +12,7 @@ import com.lab.lib.exceptions.BadRequestException;
 import com.lab.lib.repository.BaseRepository;
 import com.lab.lib.service.BaseService;
 import com.lab.lib.utils.PagingUtil;
+import com.lab.server.configs.language.MessageSourceHelper;
 import com.lab.server.entities.Role;
 import com.lab.server.payload.role.RoleRequest;
 import com.lab.server.payload.role.RoleResponse;
@@ -23,10 +24,13 @@ import com.lab.server.repositories.RoleRepository;
 public class RoleService extends BaseService<Role, Integer> {
 
     private final RoleRepository repository;    
+    private final MessageSourceHelper messageHelper;
 
-    protected RoleService(BaseRepository<Role, Integer> repository) {
+    protected RoleService(BaseRepository<Role, Integer> repository,
+    		MessageSourceHelper messageHelper) {
         super(repository);
         this.repository = (RoleRepository) repository;
+        this.messageHelper = messageHelper;
     }
 
 	public PaginationResponse<RoleResponse> findRoleWithConditions(int page, int perpage, String search) {
@@ -69,7 +73,7 @@ public class RoleService extends BaseService<Role, Integer> {
 			return new RoleResponse(role.getRoleId(),role.getRoleName().toString(), role.getDescription());			
 		}
 		else {
-			throw new BadRequestException("Role with ID " + id + " not found.");
+			throw new BadRequestException(messageHelper.getMessage("error.roleNotFound", id));
 		}
 	}
 	
@@ -92,7 +96,7 @@ public class RoleService extends BaseService<Role, Integer> {
 			return new RoleResponse(role.getRoleId(),role.getRoleName().toString(), role.getDescription());
 		}
 		else {
-			throw new BadRequestException("Employee with ID " + id + " not found.");
+			throw new BadRequestException(messageHelper.getMessage("error.roleNotFound", id));
 		}
 	}
 	
@@ -103,7 +107,7 @@ public class RoleService extends BaseService<Role, Integer> {
 			return "Delete role "+id+" successfully!";
 		}
 		else
-			throw new BadRequestException("Employee with ID " + id + " not found.");
+			throw new BadRequestException(messageHelper.getMessage("error.roleNotFound", id));
 	}
 	
 }

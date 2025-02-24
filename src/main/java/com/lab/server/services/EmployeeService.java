@@ -96,7 +96,7 @@ public class EmployeeService extends BaseService<Employee, Integer>{
 					e.getDepartmentId() != null ? e.getDepartmentId().getDepartmentId() :0
 					);
 		}
-		else throw new RuntimeException("Employee with ID " + id + " not found.");
+		else throw new BadRequestException(messageSourceHelper.getMessage("error.employeeNotFound", id));
 	}
 	
 	public EmployeeResponse createEmployee(EmployeeRequest request) {
@@ -159,7 +159,7 @@ public class EmployeeService extends BaseService<Employee, Integer>{
 	public EmployeeResponse updateEmployee(int id, EmployeeRequest request) {
 	    Employee employee = repository.findById(id).orElse(null);
 	    if (employee == null) {
-	        throw new RuntimeException("Employee with ID " + id + " not found.");
+	        throw new BadRequestException(messageSourceHelper.getMessage("error.employeeNotFound", id));
 	    }
 	    if (request.getFirstName() != null) {
 	        employee.setFirstName(request.getFirstName());
@@ -257,7 +257,7 @@ public class EmployeeService extends BaseService<Employee, Integer>{
 					.build();
 		}
 		else {
-			throw new BadRequestException(messageSourceHelper.getMessage("error.employeeNotFound", id));
+			throw new BadRequestException(messageSourceHelper.getMessage("error.employeeNotFoundDepartmentId", id));
 		}
 	}
 	
@@ -295,7 +295,7 @@ public class EmployeeService extends BaseService<Employee, Integer>{
 					.build();
 		}
 		else {
-			throw new BadRequestException(messageSourceHelper.getMessage("error.employeeNotFound", id));
+			throw new BadRequestException(messageSourceHelper.getMessage("error.employeeNotFoundPositionId", id));
 		}
 	}
 	
