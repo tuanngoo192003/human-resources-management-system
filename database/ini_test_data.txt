@@ -1,0 +1,43 @@
+-- Thêm dữ liệu vào bảng roles
+INSERT INTO roles (role_id, role_name, description) VALUES
+    (1, 'ADMIN', 'Admin of the system'),
+    (2, 'MANAGER', 'Manager'),
+    (3, 'EMPLOYEE', 'Normal employee');
+
+-- Thêm dữ liệu vào bảng permissions
+INSERT INTO permissions (permission_name, description) VALUES
+    ('read_role', 'Quyền xem thông tin vai trò'),
+    ('create_role', 'Quyền tạo mới vai trò'),
+    ('update_role', 'Quyền cập nhật vai trò'),
+    ('delete_role', 'Quyền xóa vai trò'),
+    ('read_department', 'Quyền xem thông tin phòng ban'),
+    ('create_department', 'Quyền tạo phòng ban mới'),
+    ('update_department', 'Quyền cập nhật phòng ban'),
+    ('delete_department', 'Quyền xóa phòng ban'),
+    ('read_employee', 'Quyền xem thông tin nhân viên'),
+    ('create_employee', 'Quyền tạo nhân viên mới'),
+    ('update_employee', 'Quyền cập nhật thông tin nhân viên'),
+    ('delete_employee', 'Quyền xóa nhân viên'),
+    ('read_permission', 'Quyền xem thông tin quyền hạn'),
+    ('create_permission', 'Quyền tạo quyền hạn mới'),
+    ('update_permission', 'Quyền cập nhật quyền hạn'),
+    ('delete_permission', 'Quyền xóa quyền hạn'),
+    ('read_role_permission', 'Quyền đọc role-permissions'),
+    ('create_role_permission', 'Quyền tạo role-permissions'),
+    ('delete_role_permission', 'Quyền xóa role-permissions'),
+    ('read_user', 'Quyền đọc thông tin người dùng'),
+    ('create_user', 'Quyền tạo người dùng mới'),
+    ('update_user', 'Quyền cập nhật thông tin người dùng'),
+    ('delete_user', 'Quyền xóa người dùng'),
+    ('read_position', 'Quyền xem thông tin chức vụ'),
+    ('create_position', 'Quyền tạo mới chức vụ'),
+    ('update_position', 'Quyền cập nhật thông tin chức vụ'),
+    ('delete_position', 'Quyền xóa chức vụ');
+
+-- Gán tất cả các quyền cho role ADMIN
+INSERT INTO role_permission (role_id, permission_id) 
+SELECT 1, permission_id FROM permissions;
+
+-- Thêm tài khoản admin vào bảng users
+INSERT INTO users (user_id, email, password, username, role_id) VALUES 
+(1, 'tuan.nguyenhuu@vti.com.vn', '$2a$10$kzZwQiR.CQJ/F80AzAeMFO1/hiAfx56UxxS6C/s6fXX/QbLV0zXIi', 'tuan.nguyenhuu', 1);
