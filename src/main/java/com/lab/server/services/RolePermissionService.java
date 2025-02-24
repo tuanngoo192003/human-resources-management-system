@@ -46,16 +46,22 @@ public class RolePermissionService extends BaseService<Role, Integer>{
 	public RolePermissionResponse createRolePermission(RolePermissionRequest request) {
 		Role role= repository.findById(request.getRoleId()).orElse(null);
 		Permission permission = permissionRepository.findById(request.getPermissionId()).orElse(null);
+		if(role!= null && permission != null) {
 		role.getPermissions().add(permission);
 		repository.save(role);
 		return new RolePermissionResponse(role.getRoleName().toString(), permission.getPermissionName());
+		}
+		else throw new RuntimeException("Not found exception");
 	}
 	
 	public void deleteRolePermission(RolePermissionRequest request) {
 		Role role= repository.findById(request.getRoleId()).orElse(null);
 		Permission permission = permissionRepository.findById(request.getPermissionId()).orElse(null);
-		role.getPermissions().remove(permission);
-		repository.save(role);
+		if(role!= null && permission != null) {
+			role.getPermissions().remove(permission);
+			repository.save(role);
+		}
+		else throw new RuntimeException("Not found exception");			
 	}
 	
 	public List<RoleResponse> getRolesByPermissionId(int id) {

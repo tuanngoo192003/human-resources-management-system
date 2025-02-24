@@ -1,6 +1,7 @@
 package com.lab.server.controllers;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,12 +33,14 @@ public class PositionController {
 	private final PositionService positionService;
 	
 	@GetMapping("/{id}")
+	@PreAuthorize("hasAuthority('read_position')")
 	public ApiResponse<PositionResponse> getPositionById(@PathVariable("id") int id){
 		PositionResponse response = positionService.getPositionById(id);
 		return new ApiResponse<PositionResponse>(true, response);
 	}
 	
 	@GetMapping
+	@PreAuthorize("hasAuthority('read_position')")
 	public PaginationResponse<PositionResponse> getAllPositionWithConditions(
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_PAGE) int page,
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_SIZE) int perpage, 
@@ -46,6 +49,7 @@ public class PositionController {
 	}
 	
 	@PostMapping
+	@PreAuthorize("hasAuthority('create_position')")
 	public ApiResponse<PositionResponse> createPosition(@RequestBody PositionRequest request){
 //		request.setPositionName("Developer");
 		System.out.println(request.getPositionName());
@@ -54,12 +58,14 @@ public class PositionController {
 	}
 	
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('update_position')")
 	public ApiResponse<PositionResponse> updatePosition(@PathVariable("id") int id, @Valid @RequestBody PositionRequest request) throws Exception {
 		PositionResponse response = positionService.savePosition(id, request);
 		return new ApiResponse<PositionResponse>(true, response);
 	}
 	
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAuthority('delete_position')")
 	public ApiResponse<String> deletePosition(@PathVariable("id") int id) throws Exception {
 		positionService.deletePosition(id);
 		return new ApiResponse<String>(true);
