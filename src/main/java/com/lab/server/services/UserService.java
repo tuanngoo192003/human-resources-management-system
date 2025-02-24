@@ -225,7 +225,7 @@ public class UserService extends BaseService<User, Integer> {
         	throw new BadRequestException(messageSourceHelper.getMessage("error.deleteAdmin"));
         } 
         
-        Employee userEmployee = employeeService.findByFields(Map.of("userId", currentUserLogin.getUserId()));
+        Employee userEmployee = employeeService.findByFields(Map.of("userId", currentUserLogin));
         if (userEmployee != null) employeeRepository.delete(userEmployee);
         
         repository.delete(user);
