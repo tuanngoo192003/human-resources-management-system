@@ -1,5 +1,6 @@
 package com.lab.server.services;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,12 +41,13 @@ public class UserService extends BaseService<User, Integer> {
     private final DepartmentRepository departmentRepository;
     private final PositionRepository positionRepository;
     private final RoleRepository roleRepository;
-    
+    private final EmployeeService employeeService;
 
     protected UserService(BaseRepository<User, Integer> repository, SecurityHelper securityHelper,
     		MessageSourceHelper messageSourceHelper, 
     		EmployeeRepository employeeRepository, DepartmentRepository departmentRepository,
-    		PositionRepository positionRepository, RoleRepository roleRepository) {
+    		PositionRepository positionRepository, RoleRepository roleRepository,
+    		EmployeeService employeeService) {
         super(repository);
         this.repository = (UserRepository) repository;
         this.securityHelper = securityHelper;
@@ -54,6 +56,7 @@ public class UserService extends BaseService<User, Integer> {
         this.departmentRepository = departmentRepository;
         this.positionRepository = positionRepository;
         this.roleRepository = roleRepository;
+        this.employeeService = employeeService;
     }
     
     @Transactional(readOnly = true)
@@ -73,6 +76,7 @@ public class UserService extends BaseService<User, Integer> {
     		userList = repository.findAllUsersWithConditionsForAdmin(offset, perPage, search);
     		break;
     	case "MANAGER":
+    		System.out.println("Tao o day");
     		totalRecord = repository.countAllUsersWithConditionsForManager(search);
     		offset = PagingUtil.getOffset(page, perPage);
     		totalPage = PagingUtil.getTotalPage(totalRecord, perPage);
@@ -136,7 +140,6 @@ public class UserService extends BaseService<User, Integer> {
         User user = new User();
         user.setUsername(request.getUsername());
         
-        
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmail(request.getEmail());
@@ -144,13 +147,15 @@ public class UserService extends BaseService<User, Integer> {
 
         user = repository.save(user);
         
-        if(currentUserRole.equals(SystemRole.MANAGER.name())) {
+        if(currentUserRole.equals(SystemRole.MANAGER.name()) || currentUserRole.equals(SystemRole.ADMIN.name())) {
         	employeeRepository.save(Employee.builder()
         			.firstName(request.getFirstName())
         			.lastName(request.getLastName())
         			.dateOfBirth(request.getDateOfBirth())
         			.departmentId(departmentRepository.findById(currentUserEmployee.getDepartmentId()).orElse(null))
         			.positionId(positionRepository.findById(request.getPositionId()).orElse(null))
+        			.hireDate(LocalDate.now())
+        			.userId(user)
         			.build());
         }
         
@@ -162,6 +167,7 @@ public class UserService extends BaseService<User, Integer> {
         );
     }
 
+    @Transactional(rollbackFor = BadRequestException.class)
     public UserResponse updateUserById(int id, UserRequest request) {
     	User currentUserLogin = findByFields(Map.of("username", securityHelper.getCurrentUserLogin()));
     	String currentUserRole = currentUserLogin.getRoleId().getRoleName().name();
@@ -180,14 +186,14 @@ public class UserService extends BaseService<User, Integer> {
     		throw new BadRequestException("warning.accessDenied");
     	}
     	
-    	
     	Role role = roleRepository.findById(request.getRoleId())
                 .orElseThrow(() -> new BadRequestException("error.notFound"));
         User user = repository.findById(id).orElse(null);
         if (user == null) throw new BadRequestException("error.notFound");
 
         user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword()); 
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
+        user.setPassword(passwordEncoder.encode(request.getPassword())); 
         user.setEmail(request.getEmail());
         user.setRoleId(role);
 
@@ -200,13 +206,15 @@ public class UserService extends BaseService<User, Integer> {
         );
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = BadRequestException.class)
     public String deleteUserById(int id) {
     	User currentUserLogin = findByFields(Map.of("username", securityHelper.getCurrentUserLogin()));
     	if(!currentUserLogin.getRoleId().getRoleName().equals(SystemRole.ADMIN)) throw new BadRequestException("warning.accessDenied");
         User user = repository.findById(id).orElse(null);
         if (user == null) return "User not found!";
-
+        Employee userEmployee = employeeService.findByFields(Map.of("userId", currentUserLogin.getUserId()));
+        if (userEmployee != null) employeeRepository.delete(userEmployee);
+        
         repository.delete(user);
         return "Delete user " + id + " successfully!";
     }

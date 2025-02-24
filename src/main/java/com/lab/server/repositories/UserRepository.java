@@ -18,7 +18,8 @@ public interface UserRepository extends BaseRepository<User, Integer> {
 			+ "LEFT JOIN roles r ON r.role_id = u.role_id\r\n"
 			+ "LEFT JOIN employees e ON e.user_id = u.user_id\r\n"
 			+ "LEFT JOIN departments d ON d.department_id = e.department_id\r\n"
-			+ "WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', username) @@ to_tsquery('english', :search))\r\n"
+			+ "WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', username) @@ plainto_tsquery('english', :search))\r\n"
+			+ "AND ( :search IS NULL OR :search = '' OR to_tsvector('english', email) @@ plainto_tsquery('english', :search))\r\n"
 			+ "LIMIT :limit OFFSET :offset", nativeQuery = true)
 	List<UserModel> findAllUsersWithConditionsForManager(@Param("offset") int offset, 
 			@Param("limit") int limit, 
@@ -28,12 +29,14 @@ public interface UserRepository extends BaseRepository<User, Integer> {
 			+ "LEFT JOIN roles r ON r.role_id = u.role_id\r\n"
 			+ "LEFT JOIN employees e ON e.user_id = u.user_id\r\n"
 			+ "LEFT JOIN departments d ON d.department_id = e.department_id\r\n"
-			+ "WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', username) @@ to_tsquery('english', :search))", nativeQuery = true)
+			+ "WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', username) @@ plainto_tsquery('english', :search))\r\n"
+			+ "AND ( :search IS NULL OR :search = '' OR to_tsvector('english', email) @@ plainto_tsquery('english', :search))\r\n", nativeQuery = true)
 	long countAllUsersWithConditionsForManager(@Param("search") String search);
 	
 	@Query(value = "SELECT u.user_id as userId, u.username, u.email, r.role_name as roleName FROM users u \r\n"
 			+ "LEFT JOIN roles r ON r.role_id = u.role_id\r\n"
-			+ "WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', username) @@ to_tsquery('english', :search))\r\n"
+			+ "WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', username) @@ plainto_tsquery('english', :search))\r\n"
+			+ "AND ( :search IS NULL OR :search = '' OR to_tsvector('english', email) @@ plainto_tsquery('english', :search))\r\n"
 			+ "LIMIT :limit OFFSET :offset", nativeQuery = true)
 	List<UserModel> findAllUsersWithConditionsForAdmin(@Param("offset") int offset, 
 			@Param("limit") int limit, 
@@ -41,7 +44,8 @@ public interface UserRepository extends BaseRepository<User, Integer> {
 
 	@Query(value = "SELECT COUNT(1) FROM users u \r\n"
 			+ "LEFT JOIN roles r ON r.role_id = u.role_id\r\n"
-			+ "WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', username) @@ to_tsquery('english', :search))", nativeQuery = true)
+			+ "WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', username) @@ plainto_tsquery('english', :search))\r\n"
+			+ "AND ( :search IS NULL OR :search = '' OR to_tsvector('english', email) @@ plainto_tsquery('english', :search))\r\n", nativeQuery = true)
 	long countAllUsersWithConditionsForAdmin(@Param("search") String search);
 
 	@Query(value = "SELECT u.user_id as userId, u.username, u.email, r.role_name as roleName FROM users u \r\n"

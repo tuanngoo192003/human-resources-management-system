@@ -38,7 +38,7 @@ public class EmployeeController {
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_PAGE) int page, 
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_SIZE)int perpage
 			){
-		return ResponseEntity.ok(new ApiResponse<PaginationResponse<?>>(true, employeeService.findAll(page, perpage)));
+		return ResponseEntity.ok(employeeService.findAll(page, perpage));
 	}
 	
 	@Operation(summary = "Get all employees filter by position id")
@@ -49,7 +49,7 @@ public class EmployeeController {
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_PAGE) int page, 
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_SIZE)int perpage 
 			){
-		return ResponseEntity.ok(new ApiResponse<PaginationResponse<?>>(true, employeeService.findAllByPositionId(positionId, page, perpage)));
+		return ResponseEntity.ok(employeeService.findAllByPositionId(positionId, page, perpage));
 	}
 	
 	@Operation(summary = "Get all employees filter by department id")
@@ -60,35 +60,35 @@ public class EmployeeController {
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_PAGE) int page, 
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_SIZE)int perpage 
 			){
-		return ResponseEntity.ok(new ApiResponse<PaginationResponse<?>>(true, employeeService.findAllByDepartmentId(departmentId, page, perpage)));
+		return ResponseEntity.ok(employeeService.findAllByDepartmentId(departmentId, page, perpage));
 	}
 	
 	@Operation(summary = "Get employee by id")
 	@GetMapping("/{id}")
 	@PreAuthorize("hasAuthority('read_employee')")
 	public ResponseEntity<?> getEmployeeById(@PathVariable int id){
-		return ResponseEntity.ok(new ApiResponse<>(true, employeeService.findById(id)));
+		return ResponseEntity.ok(employeeService.findById(id));
 	}
 	
 	@Operation(summary = "Create new employee")
 	@PostMapping("")
 	@PreAuthorize("hasAuthority('create_employee')")
 	public ResponseEntity<?> createNewEmployee(@ParameterObject EmployeeRequest request){
-		return ResponseEntity.ok(new ApiResponse<>(true, employeeService.createEmployee(request)));
+		return ResponseEntity.ok(employeeService.createEmployee(request));
 	}
 	
 	@Operation(summary = "Update employee by id")
 	@PutMapping("/{id}")
 	@PreAuthorize("hasAuthority('update_employee')")
 	public ResponseEntity<?> updateEmployeeById(@PathVariable int id, @ParameterObject EmployeeRequest request){
-		return ResponseEntity.ok(new ApiResponse<>(true, employeeService.updateEmployee(id, request)));
+		return ResponseEntity.ok(employeeService.updateEmployee(id, request));
 	}
 	
 	@Operation(summary = "Delete employee by id")
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasAuthority('delete_employee')")
 	public ResponseEntity<?> DeleteEmployeeById(@PathVariable int id){
-		return ResponseEntity.ok(new ApiResponse<>(true, employeeService.deleteEmployee(id)));
+		return ResponseEntity.ok(employeeService.deleteEmployee(id));
 	}
 	
 }

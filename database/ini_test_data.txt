@@ -41,3 +41,13 @@ SELECT 1, permission_id FROM permissions;
 -- Thêm tài khoản admin vào bảng users
 INSERT INTO users (user_id, email, password, username, role_id) VALUES 
 (1, 'tuan.nguyenhuu@vti.com.vn', '$2a$10$kzZwQiR.CQJ/F80AzAeMFO1/hiAfx56UxxS6C/s6fXX/QbLV0zXIi', 'tuan.nguyenhuu', 1);
+
+-- full text idx for users(username, email)
+CREATE INDEX idx_users_name_ft ON public.users USING gin(to_tsvector('english', username));
+CREATE INDEX idx_users_email_ft ON public.users USING gin(to_tsvector('english', email));
+-- full text idx for positions(position_name)
+CREATE INDEX idx_position_name_ft ON public.positions USING gin(to_tsvector('english', position_name));
+-- full text idx for departments(department_name)
+CREATE INDEX idx_department_name_ft ON public.departments USING gin(to_tsvector('english', department_name));
+-- full text idx for permission(permission_name)
+CREATE INDEX idx_permission_name_ft ON public.permissions USING gin(to_tsvector('english', permission_name));

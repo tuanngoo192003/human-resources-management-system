@@ -28,23 +28,20 @@ import com.lab.server.configs.language.MessageSourceHelper;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @RestControllerAdvice
+@RequiredArgsConstructor
 @Log4j2
 public class RestExceptionsHandler extends ResponseEntityExceptionHandler {
 
-	@Autowired
-	private MessageSourceHelper messageHelper;
-	
-	private String getMessage(String key) {
-		return messageHelper.getMessage(key);
-	}
+	private final MessageSourceHelper messageHelper;
 	
 	/* Default Exception */
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Object> handleAll(Exception exception){
-		String message = getMessage("error.unexpected");
+		String message = messageHelper.getMessage("error.unexpected");
 		String detailMessage = exception.getLocalizedMessage();
         String moreInformation = "http://localhost:8080/api/v1/exception/500";
 
@@ -55,7 +52,7 @@ public class RestExceptionsHandler extends ResponseEntityExceptionHandler {
 	
 	@ExceptionHandler(BadRequestException.class)
 	public ResponseEntity<Object> handleBadRequestException(BadRequestException bre) {
-		String message = getMessage("error.badRequestException");
+		String message = messageHelper.getMessage("error.badRequestException");
 		String detailMessage = bre.getLocalizedMessage();
         String moreInformation = "http://localhost:8080/api/v1/exception/400";
         
@@ -68,7 +65,7 @@ public class RestExceptionsHandler extends ResponseEntityExceptionHandler {
 	@Override
 	public ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ndfe, 
 			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-		StringBuilder message = new StringBuilder(getMessage("error.notFound"));
+		StringBuilder message = new StringBuilder(messageHelper.getMessage("error.notFound"));
 		message.append(", ");
 		message.append(ndfe.getHttpMethod());
 		message.append(", ");
@@ -100,7 +97,7 @@ public class RestExceptionsHandler extends ResponseEntityExceptionHandler {
 	private String getMessageFromHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
 		StringBuilder message = new StringBuilder(exception.getMethod());
 		message.append(", ");
-		message.append(getMessage("error.notSupportedMethod"));
+		message.append(messageHelper.getMessage("error.notSupportedMethod"));
         
         for (HttpMethod method : exception.getSupportedHttpMethods()) {
                 message.append(method);
@@ -125,7 +122,7 @@ public class RestExceptionsHandler extends ResponseEntityExceptionHandler {
 	private String getMessageFromHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException exception) {
 		StringBuilder message = new StringBuilder(exception.getContentType().toString());
 		message.append(", ");
-		message.append(getMessage("error.notsupportedmedia"));
+		message.append(messageHelper.getMessage("error.notsupportedmedia"));
 		
         for (Object method : exception.getSupportedMediaTypes().toArray()) {
         	message.append(method);
@@ -138,7 +135,7 @@ public class RestExceptionsHandler extends ResponseEntityExceptionHandler {
 	@Override
 	public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException manve,
 			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-		String message = getMessage("error.argumentNotValid");
+		String message = messageHelper.getMessage("error.argumentNotValid");
 		String detailMessage = manve.getLocalizedMessage();
         // error
         Map<String, String> errors = new HashMap<String, String>();
@@ -160,7 +157,7 @@ public class RestExceptionsHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiResponse<Map<String, String>>> handleConstraintViolationException(ConstraintViolationException exception) {
                     
-            StringBuilder detailMessage = new StringBuilder(getMessage("error.methodArgumentNotValid"));
+            StringBuilder detailMessage = new StringBuilder(messageHelper.getMessage("error.methodArgumentNotValid"));
             detailMessage.append(" \n");
             detailMessage.append(exception.getLocalizedMessage());
  
@@ -187,7 +184,7 @@ public class RestExceptionsHandler extends ResponseEntityExceptionHandler {
                     MissingServletRequestParameterException exception, HttpHeaders headers, HttpStatusCode status,
                     WebRequest request) {
             
-            String message = exception.getParameterName() + " " + getMessage("error.missingServletRequestParameterException");
+            String message = exception.getParameterName() + " " + messageHelper.getMessage("error.missingServletRequestParameterException");
             String detailMessage = exception.getLocalizedMessage();
  
             String moreInformation = "http://localhost:8080/api/v1/exception/400";
@@ -204,7 +201,7 @@ public class RestExceptionsHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ MethodArgumentTypeMismatchException.class })
     public ResponseEntity<ApiResponse<String>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException exception) {
 
-            String message = exception.getName() + " " + getMessage("error.MethodArgumentTypeMismatchException") 
+            String message = exception.getName() + " " + messageHelper.getMessage("error.MethodArgumentTypeMismatchException") 
                     + exception.getRequiredType().getName();
             String detailMessage = exception.getLocalizedMessage();
             String moreInformation = "http://localhost:8080/api/v1/exception/400";

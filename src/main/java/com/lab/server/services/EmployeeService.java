@@ -99,6 +99,7 @@ public class EmployeeService extends BaseService<Employee, Integer>{
 		else throw new BadRequestException(messageSourceHelper.getMessage("error.employeeNotFound", id));
 	}
 	
+	@Transactional(rollbackFor = BadRequestException.class)
 	public EmployeeResponse createEmployee(EmployeeRequest request) {
 		Employee employee =  new Employee();
 		if (request.getFirstName() != null) {
@@ -156,6 +157,7 @@ public class EmployeeService extends BaseService<Employee, Integer>{
 				);
 	}
 	
+	@Transactional(rollbackFor = BadRequestException.class)
 	public EmployeeResponse updateEmployee(int id, EmployeeRequest request) {
 	    Employee employee = repository.findById(id).orElse(null);
 	    if (employee == null) {
