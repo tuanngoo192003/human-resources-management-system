@@ -203,7 +203,7 @@ public class EmployeeService extends BaseService<Employee, Integer>{
 				.address(e.getAddress())
 				.hireDate(e.getHireDate().toString())
 				.salary(e.getSalary())
-				.status(e.getStatus().toString())
+				.status(e.getStatus() != null ? e.getStatus().toString() : "")
 				.userId(e.getUserId() != null ? e.getUserId().getUserId() : 0)
 				.positionId(e.getPositionId() != null ? e.getPositionId().getPositionId() :0)
 				.departmentId(e.getDepartmentId() != null ? e.getDepartmentId().getDepartmentId() :0)
