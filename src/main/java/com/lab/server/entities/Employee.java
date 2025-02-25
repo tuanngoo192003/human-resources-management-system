@@ -2,6 +2,7 @@ package com.lab.server.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,11 +10,15 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.lab.lib.enumerated.EmployeeStatus;
 
 @Table(name = "employees", schema = "public")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -55,10 +60,12 @@ public class Employee implements Serializable {
 	
 	@ManyToOne
 	@JoinColumn(name = "position_id")
+	@OnDelete(action = OnDeleteAction.SET_NULL)
 	private Position positionId;
 	
 	@ManyToOne
 	@JoinColumn(name = "department_id")
+	@OnDelete(action = OnDeleteAction.SET_NULL)
 	private Department departmentId;
 	
 }

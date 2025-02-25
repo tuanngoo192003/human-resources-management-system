@@ -1,17 +1,45 @@
 spring:
   application:
     name: demo1
+  config:
+    import: secure.properties
   datasource:
-    url: jdbc:postgresql://localhost:5432/human_resource_management_system_mvp
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: false
 jwt:
   access-token:
-    expiration: 60
-  secret-key: token-secret-key
+    expiration: ${ACCESS_TOKEN_EXPIRATION}
+  secret-key: ${JWT_SECRECT_KEY}
   refresh-token:
-    expiration: 10080
+    expiration: ${REFRESH_TOKEN_EXPIRATION}
+redis:
+  host: ${REDIS_HOST}
+  port: ${REDIS_PORT}
+  database: ${REDIS_DB}
+  password: ${REDIS_DB_PASSWORD}
+  timeout: ${REDIS_TIMEOUT} 
+springdoc:
+  api-docs:
+    enabled: true  
+  packages-to-scan: com.lab.server.controllers  
+  paths-to-match: /**  
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "logfile" 
+  endpoint:
+    health:
+      show-details: always
+  file:
+    name: ${LOGGING_FILE_PATH}
+
+logging:
+  file:
+    name: ${LOGGING_FILE_PATH}
+

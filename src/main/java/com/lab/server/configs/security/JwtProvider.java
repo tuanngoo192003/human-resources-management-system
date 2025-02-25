@@ -3,9 +3,8 @@ package com.lab.server.configs.security;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Component
-@Slf4j
+@Log4j2
 @RequiredArgsConstructor
 public class JwtProvider {
 
@@ -27,19 +26,17 @@ public class JwtProvider {
     @Value("${jwt.secret-key}")
 	private String secretKey;
 	
-	private final UserDetailsService userDetailsService;
 	private final String AUTH_PREFIX = "Bearer ";
 	private final String HEADER = "Authorization";
 
-	public String generateToken(String username, String language){
+	public String generateToken(String username){
 		Date now = new Date();
 		Date expiryDate = new Date(now.getTime() + expirationTime);
-
+		
 		return Jwts.builder().setHeader(Map.of("typ", "JWT"))
 				.setSubject(username)
 				.setIssuedAt(now)
 				.setExpiration(expiryDate)
-				.claim("lang", language)
 				.signWith(SignatureAlgorithm.HS512, secretKey)
 				.compact();
 	}
@@ -76,13 +73,9 @@ public class JwtProvider {
 		}
 		return null;
 	}
-
-	public String getLanguageFromToken(String token) {
-		Claims claims = Jwts.parser()
-				.setSigningKey(secretKey)
-				.parseClaimsJws(token)
-				.getBody();
-		return claims.get("lang", String.class);
+	
+	public long getExpirationTime() {
+		return this.expirationTime;
 	}
 
 }

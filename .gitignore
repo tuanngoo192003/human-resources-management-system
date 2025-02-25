@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### VS Code ###
+logs/
+
+### env ###
+src/main/resources/secure.properties

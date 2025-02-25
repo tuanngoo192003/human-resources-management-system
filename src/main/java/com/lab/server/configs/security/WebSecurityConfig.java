@@ -15,13 +15,16 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.lab.server.caches.ICacheData;
 import com.lab.server.configs.language.DetectLanguageInterceptor;
+import com.lab.server.configs.language.MessageSourceHelper;
 
 @Configuration
 @EnableWebSecurity
@@ -32,20 +35,24 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     private final JwtProvider jwtProvider;
     private final UserDetailsService userDetailsService;
     private final DetectLanguageInterceptor languageInterceptor;
+    private final MessageSourceHelper messageSourceHelper;
+    private final ICacheData<String> caches;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/auth/login")
-                        .permitAll().anyRequest().authenticated())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())  
+            	.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            	.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            	.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); 
+
         return http.build();
     }
-
+    
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(){
-        return new JwtAuthenticationFilter(jwtProvider, userDetailsService);
+        return new JwtAuthenticationFilter(jwtProvider, userDetailsService, messageSourceHelper, caches);
     }
 
     @Override
@@ -66,13 +73,12 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cors = new CorsConfiguration();
-        cors.setAllowCredentials(true);
+        cors.setAllowCredentials(false);
         cors.addAllowedOriginPattern(CorsConfiguration.ALL);
         cors.addAllowedMethod(CorsConfiguration.ALL);
         cors.addAllowedHeader(CorsConfiguration.ALL);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", cors);
-
         return source;
     }
 }

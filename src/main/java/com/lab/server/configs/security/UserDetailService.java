@@ -26,6 +26,7 @@ public class UserDetailService implements UserDetailsService{
 			final var authorizations = user.getRoleId().getPermissions()
 					.stream().map(permission -> new SimpleGrantedAuthority(permission.getPermissionName()))
 					.toList();
+	
 			return org.springframework.security.core.userdetails.User
 					.withUsername(username)
 					.password(user.getPassword())
