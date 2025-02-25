@@ -1,6 +1,8 @@
 package com.lab.server.repositories;
 
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -9,7 +11,7 @@ import com.lab.lib.repository.BaseRepository;
 import com.lab.server.entities.Employee;
 import com.lab.server.entities.Position;
 import com.lab.server.repositories.model.EmployeeModel;
-import java.util.List;
+
 import com.lab.server.entities.Department;
 
 
@@ -21,6 +23,6 @@ public interface EmployeeRepository extends BaseRepository<Employee, Integer> {
 			+ "	WHERE e.user_id = :userId ", nativeQuery = true)
 	public EmployeeModel findEmployeeByUserId(@Param("userId") int userId);
 	
-	List<Employee> findAllByDepartmentId(Department departmentId);
-	List<Employee> findAllByPositionId(Position position);
+	Page<Employee> findAllByDepartmentId(Department departmentId,Pageable pageable);
+	Page<Employee> findAllByPositionId(Position position, Pageable pageable);
 }
