@@ -14,11 +14,11 @@ import com.lab.server.entities.Position;
 public interface PositionRepository extends BaseRepository<Position, Integer> {
 
 	@Query(value = "SELECT COUNT(1) FROM public.positions p "
-			+ "WHERE ( :search IS NULL OR :search = '' OR p.position_name = :search ) ", nativeQuery = true)
+			+ "WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', p.position_name) @@ plainto_tsquery('english', :search ) )", nativeQuery = true)
 	long countAllPositionWithConditions(@Param("search") String search);
 
 	@Query(value = "SELECT p.position_id, p.position_name FROM public.positions p "
-			+ "WHERE ( :search IS NULL OR :search = '' OR p.position_name = :search ) "
+			+ "WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', p.position_name) @@ plainto_tsquery('english', :search ) ) "
 			+ "LIMIT :limit OFFSET :offset ", nativeQuery = true)
 	List<Position> findAllPositionWithConditions(@Param("offset") int offset, 
 												@Param("limit") int limit, 

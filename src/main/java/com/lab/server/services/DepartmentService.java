@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lab.lib.api.PaginationResponse;
+import com.lab.lib.exceptions.BadRequestException;
 import com.lab.lib.repository.BaseRepository;
 import com.lab.lib.service.BaseService;
 import com.lab.lib.utils.PagingUtil;
@@ -80,8 +81,8 @@ public class DepartmentService extends BaseService<Department, Integer>{
 			Department department = findByFields(Map.of("departmentId", id));
 			repository.delete(department);
 		} catch(Exception e) {
-			log.error(messageHelper.getMessage("error.data.notfound"));
-			throw new Exception("error.data.notfound");
+			log.error(messageHelper.getMessage(messageHelper.getMessage("error.departmentNotFound", id)));
+			throw new BadRequestException(messageHelper.getMessage("error.departmentNotFound", id));
 		}
 	}
 	

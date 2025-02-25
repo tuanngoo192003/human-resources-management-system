@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lab.lib.api.PaginationResponse;
+import com.lab.lib.exceptions.BadRequestException;
 import com.lab.lib.repository.BaseRepository;
 import com.lab.lib.service.BaseService;
 import com.lab.lib.utils.PagingUtil;
+import com.lab.server.configs.language.MessageSourceHelper;
 import com.lab.server.entities.Permission;
 import com.lab.server.payload.permission.PermissionRequest;
 import com.lab.server.payload.permission.PermissionResponse;
@@ -22,9 +24,12 @@ import com.lab.server.repositories.PermissionRepository;
 public class PermissionService extends BaseService<Permission, Integer>{
 	
 	private final PermissionRepository repository;
+	private final MessageSourceHelper messageSourceHelper;
 
-	protected PermissionService(BaseRepository<Permission, Integer> repository) {
+	protected PermissionService(BaseRepository<Permission, Integer> repository,
+			MessageSourceHelper messageSourceHelper) {
 		super(repository);
+		this.messageSourceHelper = messageSourceHelper;
 		this.repository = (PermissionRepository) repository;
 	}
 	
@@ -53,7 +58,7 @@ public class PermissionService extends BaseService<Permission, Integer>{
 		Permission permission= repository.findById(id).orElse(null);
 		if(permission != null)
 		return new PermissionResponse(permission.getPermissionId(), permission.getPermissionName(), permission.getDescription());
-		else throw new RuntimeException("Not found permission");
+		else throw new BadRequestException("Not found permission");
 	}
 	
 	@Transactional(readOnly = true)
@@ -66,7 +71,7 @@ public class PermissionService extends BaseService<Permission, Integer>{
 			});
 			return list;			
 		}
-		else throw new RuntimeException("Not found permission");
+		else throw new BadRequestException(messageSourceHelper.getMessage("error.permissionNotFound"));
 	}
 	
 	public PermissionResponse createPermission(PermissionRequest request) {
@@ -87,7 +92,7 @@ public class PermissionService extends BaseService<Permission, Integer>{
 			repository.save(permission);
 			return new PermissionResponse(permission.getPermissionId(), permission.getPermissionName(), permission.getDescription());
 		}
-		else throw new RuntimeException("Not found permission");
+		else throw new BadRequestException(messageSourceHelper.getMessage("error.permissionNotFound"));
 	}
 	
 	public String deletePermissionById(int id) {
@@ -96,6 +101,6 @@ public class PermissionService extends BaseService<Permission, Integer>{
 		repository.delete(permission);
 		return "Delete permission "+id+" successfully!";
 		}
-		else throw new RuntimeException("Not found permission");
+		else throw new BadRequestException(messageSourceHelper.getMessage("error.permissionNotFound"));
 	}	
 }

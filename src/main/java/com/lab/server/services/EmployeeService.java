@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lab.lib.api.ApiResponse;
 import com.lab.lib.api.PaginationResponse;
+import com.lab.lib.exceptions.BadRequestException;
 import com.lab.lib.repository.BaseRepository;
 import com.lab.lib.service.BaseService;
 import com.lab.lib.utils.PagingUtil;
+import com.lab.server.configs.language.MessageSourceHelper;
 import com.lab.server.entities.Department;
 import com.lab.server.entities.Employee;
 import com.lab.server.entities.Position;
@@ -25,18 +27,21 @@ import com.lab.server.repositories.UserRepository;
 
 @Service
 public class EmployeeService extends BaseService<Employee, Integer>{
+	
 	private final EmployeeRepository repository;
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
+	private final PositionRepository positionRepository;
+	private final DepartmentRepository departmentRepository;
+	private final MessageSourceHelper messageSourceHelper;
 	
-	@Autowired
-	private PositionRepository positionRepository;
-	
-	@Autowired
-	private DepartmentRepository departmentRepository;
-	
-	protected EmployeeService(BaseRepository<Employee, Integer> repository) {
+	protected EmployeeService(BaseRepository<Employee, Integer> repository, 
+			DepartmentRepository departmentRepository, PositionRepository positionRepository,
+			UserRepository userRepository, MessageSourceHelper messageSourceHelper) {
 		super(repository);
+		this.userRepository = userRepository;
+		this.departmentRepository = departmentRepository;
+		this.positionRepository = positionRepository;
+		this.messageSourceHelper = messageSourceHelper;
 		this.repository = (EmployeeRepository) repository;
 	}
 	
@@ -91,9 +96,10 @@ public class EmployeeService extends BaseService<Employee, Integer>{
 					e.getDepartmentId() != null ? e.getDepartmentId().getDepartmentId() :0
 					);
 		}
-		else throw new RuntimeException("Employee with ID " + id + " not found.");
+		else throw new BadRequestException(messageSourceHelper.getMessage("error.employeeNotFound", id));
 	}
 	
+	@Transactional(rollbackFor = BadRequestException.class)
 	public EmployeeResponse createEmployee(EmployeeRequest request) {
 		Employee employee =  new Employee();
 		if (request.getFirstName() != null) {
@@ -151,10 +157,11 @@ public class EmployeeService extends BaseService<Employee, Integer>{
 				);
 	}
 	
+	@Transactional(rollbackFor = BadRequestException.class)
 	public EmployeeResponse updateEmployee(int id, EmployeeRequest request) {
 	    Employee employee = repository.findById(id).orElse(null);
 	    if (employee == null) {
-	        throw new RuntimeException("Employee with ID " + id + " not found.");
+	        throw new BadRequestException(messageSourceHelper.getMessage("error.employeeNotFound", id));
 	    }
 	    if (request.getFirstName() != null) {
 	        employee.setFirstName(request.getFirstName());
@@ -213,9 +220,9 @@ public class EmployeeService extends BaseService<Employee, Integer>{
 		Employee employee = repository.findById(id).orElse(null);
 		if(employee!=null) {
 			repository.delete(employee);
-			return new ApiResponse<>(true,"Delete employee id "+id+" successfully!");
+			return new ApiResponse<>(true, messageSourceHelper.getMessage("success.deleteEmployee", id));
 		}
-		else return new ApiResponse<>(false,"Employee with ID " + id + " not found.");
+		else return new ApiResponse<>(false, messageSourceHelper.getMessage("error.employeeNotFound", id));
 	}
 	
 	@Transactional(readOnly = true)
@@ -252,7 +259,7 @@ public class EmployeeService extends BaseService<Employee, Integer>{
 					.build();
 		}
 		else {
-			throw new RuntimeException("Employee with Department Id " + id + " not found.");
+			throw new BadRequestException(messageSourceHelper.getMessage("error.employeeNotFoundDepartmentId", id));
 		}
 	}
 	
@@ -290,7 +297,7 @@ public class EmployeeService extends BaseService<Employee, Integer>{
 					.build();
 		}
 		else {
-			throw new RuntimeException("Employee with position id " + id + " not found.");
+			throw new BadRequestException(messageSourceHelper.getMessage("error.employeeNotFoundPositionId", id));
 		}
 	}
 	

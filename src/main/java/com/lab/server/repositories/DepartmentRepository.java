@@ -14,11 +14,11 @@ import com.lab.server.entities.Department;
 public interface DepartmentRepository extends BaseRepository<Department, Integer> {
 
 	@Query(value = "SELECT COUNT(1) FROM public.departments d "
-			+ " WHERE ( :search IS NULL OR :search = '' OR d.department_name = :search ) ", nativeQuery = true)
+			+ " WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', d.department_name) @@ plainto_tsquery('english', :search )) ", nativeQuery = true)
 	long countAllDepartmentWithConditions(@Param("search") String search);
 	
 	@Query(value = "SELECT d.department_id, d.department_name, d.description FROM public.departments d "
-			+ "WHERE ( :search IS NULL OR :search = '' OR d.department_name = :search ) "
+			+ "WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', d.department_name) @@ plainto_tsquery('english', :search )) "
 			+ "LIMIT :limit OFFSET :offset ", nativeQuery = true)
 	List<Department> findAllDepartmentWithConditions(@Param("offset") int offset,
 													 @Param("limit") int limit,

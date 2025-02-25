@@ -19,4 +19,5 @@ public class UserRequest {
     private String lastName;
     private LocalDate dateOfBirth;
     private int positionId;
+    private int departmentId;
 }
