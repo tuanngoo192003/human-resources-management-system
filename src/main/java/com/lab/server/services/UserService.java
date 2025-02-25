@@ -122,26 +122,37 @@ public class UserService extends BaseService<User, Integer> {
     		throw new UnAuthorizationException(messageSourceHelper.getMessage("warning.accessDenied"));
     	}
     	
-        return new UserResponse(user.getUserId(),user.getUsername(), user.getEmail(), user.getRoleName());
+        if(user!= null) return new UserResponse(user.getUserId(),user.getUsername(), user.getEmail(), user.getRoleName());
+        else throw new BadRequestException(messageSourceHelper.getMessage("error.employeeNotFoundDepartmentId", id));
     }
 
     @Transactional(rollbackFor = BadRequestException.class)
     public UserResponse createUser(UserRequest request) {
     	User currentUserLogin = findByFields(Map.of("username", securityHelper.getCurrentUserLogin()));
     	String currentUserRole = currentUserLogin.getRoleId().getRoleName().name();
-    	//EmployeeModel currentUserEmployee = employeeRepository.findEmployeeByUserId(currentUserLogin.getUserId());
+    	EmployeeModel currentUserEmployee = employeeRepository.findEmployeeByUserId(currentUserLogin.getUserId());
     	
     	if(currentUserRole.equals(SystemRole.EMPLOYEE.name())) {
     		throw new UnAuthorizationException(messageSourceHelper.getMessage("warning.accessDenied"));
     	}
     	
-    	Role role = roleRepository.findById(request.getRoleId())
+    	Role roleRequest = roleRepository.findById(request.getRoleId())
+        .orElseThrow(() -> new BadRequestException(messageSourceHelper.getMessage("error.notFound")));
+    	
+    	Role roleCurrentUser = roleRepository.findById(currentUserLogin.getRoleId().getRoleId())
                 .orElseThrow(() -> new BadRequestException(messageSourceHelper.getMessage("error.notFound")));
     	
-    	if(role.getRoleName().equals(SystemRole.ADMIN)) {
-    		if(!currentUserRole.equals(SystemRole.ADMIN.name())) {
+    	Integer departmentId = currentUserEmployee.getDepartmentId() != null ? currentUserEmployee.getDepartmentId() : null;
+    	
+    	if(roleRequest.getRoleName().equals(SystemRole.ADMIN)) {
+			throw new UnAuthorizationException(messageSourceHelper.getMessage("warning.accessDenied"));
+		}
+    	
+    	if(currentUserRole.equals(SystemRole.ADMIN.name())) departmentId = request.getDepartmentId();
+    	
+    	if(roleCurrentUser.getRoleName().equals(SystemRole.MANAGER)) {
+    		if(roleCurrentUser.getRoleName().equals(roleRequest.getRoleName())) 
     			throw new UnAuthorizationException(messageSourceHelper.getMessage("warning.accessDenied"));
-    		}
     	}
     	
         User user = new User();
@@ -150,22 +161,22 @@ public class UserService extends BaseService<User, Integer> {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmail(request.getEmail());
-        user.setRoleId(role);
+        user.setRoleId(roleRequest);
 
         user = repository.save(user);
-        
+   
         if(currentUserRole.equals(SystemRole.MANAGER.name()) || currentUserRole.equals(SystemRole.ADMIN.name())) {
         	employeeRepository.save(Employee.builder()
         			.firstName(request.getFirstName())
         			.lastName(request.getLastName())
         			.dateOfBirth(request.getDateOfBirth())
-        			.departmentId(departmentRepository.findById(request.getDepartmentId()).orElse(null))
+        			.departmentId(departmentRepository.findById(departmentId).orElse(null))
         			.positionId(positionRepository.findById(request.getPositionId()).orElse(null))
         			.hireDate(LocalDate.now())
         			.userId(user)
         			.build());
         }
-        
+ 
         return new UserResponse(
             user.getUserId(),
             user.getUsername(),
@@ -225,7 +236,7 @@ public class UserService extends BaseService<User, Integer> {
         	throw new BadRequestException(messageSourceHelper.getMessage("error.deleteAdmin"));
         } 
         
-        Employee userEmployee = employeeService.findByFields(Map.of("userId", currentUserLogin));
+        Employee userEmployee = employeeService.findByFields(Map.of("userId", user));
         if (userEmployee != null) employeeRepository.delete(userEmployee);
         
         repository.delete(user);

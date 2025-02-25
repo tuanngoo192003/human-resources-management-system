@@ -15,9 +15,9 @@ public interface UserRepository extends BaseRepository<User, Integer> {
 
 
 	@Query(value = "SELECT u.user_id as userId, u.username, u.email, r.role_name as roleName FROM users u \r\n"
-			+ "LEFT JOIN roles r ON r.role_id = u.role_id\r\n"
-			+ "LEFT JOIN employees e ON e.user_id = u.user_id\r\n"
-			+ "LEFT JOIN departments d ON d.department_id = e.department_id\r\n"
+			+ "INNER JOIN roles r ON r.role_id = u.role_id\r\n"
+			+ "INNER JOIN employees e ON e.user_id = u.user_id\r\n"
+			+ "INNER JOIN departments d ON d.department_id = e.department_id\r\n"
 			+ "WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', username) @@ plainto_tsquery('english', :search))\r\n"
 			+ "AND ( :search IS NULL OR :search = '' OR to_tsvector('english', email) @@ plainto_tsquery('english', :search))\r\n"
 			+ "LIMIT :limit OFFSET :offset", nativeQuery = true)
@@ -26,15 +26,15 @@ public interface UserRepository extends BaseRepository<User, Integer> {
 			@Param("search") String search);
 
 	@Query(value = "SELECT COUNT(1) FROM users u \r\n"
-			+ "LEFT JOIN roles r ON r.role_id = u.role_id\r\n"
-			+ "LEFT JOIN employees e ON e.user_id = u.user_id\r\n"
-			+ "LEFT JOIN departments d ON d.department_id = e.department_id\r\n"
+			+ "INNER JOIN roles r ON r.role_id = u.role_id\r\n"
+			+ "INNER JOIN employees e ON e.user_id = u.user_id\r\n"
+			+ "INNER JOIN departments d ON d.department_id = e.department_id\r\n"
 			+ "WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', username) @@ plainto_tsquery('english', :search))\r\n"
 			+ "AND ( :search IS NULL OR :search = '' OR to_tsvector('english', email) @@ plainto_tsquery('english', :search))\r\n", nativeQuery = true)
 	long countAllUsersWithConditionsForManager(@Param("search") String search);
 	
 	@Query(value = "SELECT u.user_id as userId, u.username, u.email, r.role_name as roleName FROM users u \r\n"
-			+ "LEFT JOIN roles r ON r.role_id = u.role_id\r\n"
+			+ "INNER JOIN roles r ON r.role_id = u.role_id\r\n"
 			+ "WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', username) @@ plainto_tsquery('english', :search))\r\n"
 			+ "AND ( :search IS NULL OR :search = '' OR to_tsvector('english', email) @@ plainto_tsquery('english', :search))\r\n"
 			+ "LIMIT :limit OFFSET :offset", nativeQuery = true)
@@ -43,20 +43,20 @@ public interface UserRepository extends BaseRepository<User, Integer> {
 			@Param("search") String search);
 
 	@Query(value = "SELECT COUNT(1) FROM users u \r\n"
-			+ "LEFT JOIN roles r ON r.role_id = u.role_id\r\n"
+			+ "INNER JOIN roles r ON r.role_id = u.role_id\r\n"
 			+ "WHERE ( :search IS NULL OR :search = '' OR to_tsvector('english', username) @@ plainto_tsquery('english', :search))\r\n"
 			+ "AND ( :search IS NULL OR :search = '' OR to_tsvector('english', email) @@ plainto_tsquery('english', :search))\r\n", nativeQuery = true)
 	long countAllUsersWithConditionsForAdmin(@Param("search") String search);
 
 	@Query(value = "SELECT u.user_id as userId, u.username, u.email, r.role_name as roleName FROM users u \r\n"
-			+ "LEFT JOIN roles r ON r.role_id = u.role_id\r\n"
+			+ "INNER JOIN roles r ON r.role_id = u.role_id\r\n"
 			+ "WHERE u.user_id = :id ", nativeQuery = true)
 	UserModel findUserById(@Param("id") int id);
 	
 	@Query(value = "SELECT u.user_id as userId, u.username, u.email, r.role_name as roleName FROM users u \r\n"
-			+ "LEFT JOIN roles r ON r.role_id = u.role_id\r\n"
-			+ "LEFT JOIN employees e ON e.user_id = u.user_id\r\n"
-			+ "LEFT JOIN departments d ON d.department_id = e.department_id\r\n"
+			+ "INNER JOIN roles r ON r.role_id = u.role_id\r\n"
+			+ "INNER JOIN employees e ON e.user_id = u.user_id\r\n"
+			+ "INNER JOIN departments d ON d.department_id = e.department_id\r\n"
 			+ "WHERE u.user_id = :id ", nativeQuery = true)
 	UserModel findUserByIdForManager(@Param("id") int id);
 }
