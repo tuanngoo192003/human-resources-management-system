@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "users", schema = "public")
 @Getter
@@ -33,4 +35,7 @@ public class User implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "role_id")
 	private Role roleId;
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+	private List<Employee> employees = new ArrayList<>();
 }

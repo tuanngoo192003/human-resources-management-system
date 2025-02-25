@@ -18,6 +18,7 @@ import com.lab.lib.service.BaseService;
 import com.lab.lib.utils.PagingUtil;
 import com.lab.server.configs.language.MessageSourceHelper;
 import com.lab.server.configs.security.SecurityHelper;
+import com.lab.server.entities.Department;
 import com.lab.server.entities.Employee;
 import com.lab.server.entities.Role;
 import com.lab.server.entities.User;
@@ -65,22 +66,31 @@ public class UserService extends BaseService<User, Integer> {
     	User currentUserLogin = findByFields(Map.of("username", securityHelper.getCurrentUserLogin()));
     	String currentUserRole = currentUserLogin.getRoleId().getRoleName().name();
     	
+//    	int currentUser = currentUserLogin.get
+    	
     	long totalRecord;
     	int offset, totalPage;
     	List<UserModel> userList;
     	
     	switch(currentUserRole) {
     	case "ADMIN":
-    		totalRecord = repository.countAllUsersWithConditionsForAdmin(search);
+    		totalRecord = repository.countUsersBySearch(search);
     		offset = PagingUtil.getOffset(page, perPage);
     		totalPage = PagingUtil.getTotalPage(totalRecord, perPage);
-    		userList = repository.findAllUsersWithConditionsForAdmin(offset, perPage, search);
+    		userList = repository.searchUsersWithPagination(search, perPage, offset);
     		break;
     	case "MANAGER":
-    		totalRecord = repository.countAllUsersWithConditionsForManager(search);
+    		List<Employee> employees = currentUserLogin.getEmployees();	
+        	List<Department> departments = employees.stream()
+                    .map(Employee::getDepartmentId)
+                    .distinct()  
+                    .toList();
+        	int departmentId = departments.get(0).getDepartmentId();
+
+    		totalRecord = repository.countUsersByDepartment(departmentId,search);
     		offset = PagingUtil.getOffset(page, perPage);
     		totalPage = PagingUtil.getTotalPage(totalRecord, perPage);
-    		userList = repository.findAllUsersWithConditionsForManager(offset, perPage, search);
+    		userList = repository.findAllUsersByDepartment(departmentId,offset, perPage, search);
     		break;
     	case "EMPLOYEE":
     		throw new UnAuthorizationException(messageSourceHelper.getMessage("warning.accessDenied"));
@@ -101,6 +111,7 @@ public class UserService extends BaseService<User, Integer> {
 				.totalRecord(totalRecord)
 				.build();
 	}
+
 
     @Transactional(readOnly = true)
     public UserResponse findUserById(int id) {
