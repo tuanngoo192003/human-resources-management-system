@@ -65,18 +65,19 @@ public interface UserRepository extends BaseRepository<User, Integer> {
 	long countUsersBySearch(@Param("search") String search);
 
 	@Query(value = """
-			SELECT user_id, username, email, role_id
-			FROM users
-			WHERE (:search IS NULL OR :search = ''
-			    OR username ILIKE CONCAT('%', :search, '%')
-			    OR email ILIKE CONCAT('%', :search, '%')
-			    OR to_tsvector('english', username) @@ plainto_tsquery('english', :search)
-			    OR to_tsvector('english', email) @@ plainto_tsquery('english', :search))
-			ORDER BY username ASC
-			LIMIT :limit OFFSET :offset
-			""", nativeQuery = true)
+	        SELECT u.user_id, u.username, u.email, u.role_id, r.role_name
+	        FROM users u
+	        JOIN roles r ON u.role_id = r.role_id
+	        WHERE (:search IS NULL OR :search = ''
+	            OR u.username ILIKE CONCAT('%', :search, '%')
+	            OR u.email ILIKE CONCAT('%', :search, '%')
+	            OR to_tsvector('english', u.username) @@ plainto_tsquery('english', :search)
+	            OR to_tsvector('english', u.email) @@ plainto_tsquery('english', :search))
+	        ORDER BY u.username ASC
+	        LIMIT :limit OFFSET :offset
+	        """, nativeQuery = true)
 	List<UserModel> searchUsersWithPagination(@Param("search") String search, @Param("limit") int limit,
-			@Param("offset") int offset);
+	        @Param("offset") int offset);
 
 	//
 	@Query(value = "SELECT u.user_id as userId, u.username, u.email, r.role_name as roleName FROM users u \r\n"

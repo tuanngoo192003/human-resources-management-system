@@ -1,6 +1,7 @@
 package com.lab.server.services;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +16,7 @@ import com.lab.lib.enumerated.EmployeeStatus;
 import com.lab.lib.exceptions.BadRequestException;
 import com.lab.lib.repository.BaseRepository;
 import com.lab.lib.service.BaseService;
+import com.lab.lib.utils.PagingUtil;
 import com.lab.server.configs.language.MessageSourceHelper;
 import com.lab.server.entities.Department;
 import com.lab.server.entities.Employee;
@@ -22,10 +24,12 @@ import com.lab.server.entities.Position;
 import com.lab.server.entities.User;
 import com.lab.server.payload.employee.EmployeeRequest;
 import com.lab.server.payload.employee.EmployeeResponse;
+import com.lab.server.payload.user.UserResponse;
 import com.lab.server.repositories.DepartmentRepository;
 import com.lab.server.repositories.EmployeeRepository;
 import com.lab.server.repositories.PositionRepository;
 import com.lab.server.repositories.UserRepository;
+import com.lab.server.repositories.model.EmployeeModel;
 
 @Service
 public class EmployeeService extends BaseService<Employee, Integer>{
@@ -61,6 +65,28 @@ public class EmployeeService extends BaseService<Employee, Integer>{
                 .totalPage(employeePage.getTotalPages())
                 .build();
 	}
+	//
+	@Transactional(readOnly = true)
+	public PaginationResponse<EmployeeResponse> findAll2(
+			int page, int perpage, String search){
+		long totalRecord;
+    	int offset, totalPage;
+    	totalRecord = repository.countEmployees(search);
+    	System.out.println("hehehehe: " + totalRecord);
+    	offset = PagingUtil.getOffset(page, perpage);
+    	totalPage = PagingUtil.getTotalPage(totalRecord, perpage);
+    	List<Employee> employeeList = repository.searchEmployeesWithPagination(search,perpage,offset);
+    	
+    	List<EmployeeResponse> result = employeeList.stream().map(e -> toEmployeeResponse(e)).toList();
+		return PaginationResponse.<EmployeeResponse>builder()
+                .page(page)
+                .perPage(perpage)
+                .data(result)
+                .totalRecord(totalRecord)
+                .totalPage(totalPage)
+                .build();
+	}
+	//
 	
 	@Transactional(readOnly = true)
 	public EmployeeResponse findById(int id) {
@@ -209,4 +235,6 @@ public class EmployeeService extends BaseService<Employee, Integer>{
 				.departmentId(e.getDepartmentId() != null ? e.getDepartmentId().getDepartmentId() :0)
 				.build();
 	}
+	
+	
 }

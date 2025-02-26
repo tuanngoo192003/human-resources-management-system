@@ -33,10 +33,11 @@ public class EmployeeController {
 	@GetMapping("")
 	@PreAuthorize("hasAuthority('read_employee')")
 	public ResponseEntity<?> getAll(
-			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_PAGE) int page, 
-			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_SIZE)int perpage
-			){
-		return ResponseEntity.ok(employeeService.findAll(page, perpage));
+			@RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int perPage,
+			@RequestParam( defaultValue = "") String search)
+			{
+		return ResponseEntity.ok(employeeService.findAll2(page,perPage, search));
 	}
 	
 	@Operation(summary = "Get all employees filter by position id")
