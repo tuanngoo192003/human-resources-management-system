@@ -195,7 +195,6 @@ public class UserService extends BaseService<User, Integer> {
 	public UserResponse updateUserById(int id, UserRequest.UpdateUserRequest request) {
 		User currentUserLogin = findByFields(Map.of("username", securityHelper.getCurrentUserLogin()));
 		String currentUserRole = currentUserLogin.getRoleId().getRoleName().name();
-
 		switch (currentUserRole) {
 		case "ADMIN":
 			break;
@@ -214,8 +213,6 @@ public class UserService extends BaseService<User, Integer> {
 			throw new UnAuthorizationException(messageSourceHelper.getMessage("warning.accessDenied"));
 		}
 
-		Role role = roleRepository.findById(request.getRoleId())
-				.orElseThrow(() -> new BadRequestException(messageSourceHelper.getMessage("error.notFound")));
 		User user = repository.findById(id).orElse(null);
 		if (user == null)
 			throw new BadRequestException(messageSourceHelper.getMessage("error.notFound"));
@@ -224,8 +221,6 @@ public class UserService extends BaseService<User, Integer> {
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
 		user.setEmail(request.getEmail());
-		user.setRoleId(role);
-
 		user = repository.save(user);
 		return new UserResponse(user.getUserId(), user.getUsername(), user.getEmail(),
 				user.getRoleId().getRoleName().name());

@@ -12,13 +12,6 @@ spring:
       ddl-auto: update
     show-sql: false
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${OAUTH2_ISSUER_URI}  # URL của OAuth2 Provider
-          jwk-set-uri: ${OAUTH2_JWK_SET_URI}  # Public key để xác thực token
-
 jwt:
   access-token:
     expiration: ${ACCESS_TOKEN_EXPIRATION}
