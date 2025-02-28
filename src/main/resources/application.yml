@@ -11,23 +11,34 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: false
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OAUTH2_ISSUER_URI}  # URL của OAuth2 Provider
+          jwk-set-uri: ${OAUTH2_JWK_SET_URI}  # Public key để xác thực token
+
 jwt:
   access-token:
     expiration: ${ACCESS_TOKEN_EXPIRATION}
   secret-key: ${JWT_SECRECT_KEY}
   refresh-token:
     expiration: ${REFRESH_TOKEN_EXPIRATION}
+
 redis:
   host: ${REDIS_HOST}
   port: ${REDIS_PORT}
   database: ${REDIS_DB}
   password: ${REDIS_DB_PASSWORD}
   timeout: ${REDIS_TIMEOUT} 
+
 springdoc:
   api-docs:
     enabled: true  
   packages-to-scan: com.lab.server.controllers  
   paths-to-match: /**  
+
 management:
   endpoints:
     web:
@@ -43,3 +54,10 @@ logging:
   file:
     name: ${LOGGING_FILE_PATH}
 
+# Cấu hình OAuth2 cho Swagger UI
+swagger:
+  oauth2:
+    client-id: ${OAUTH2_CLIENT_ID}
+    client-secret: ${OAUTH2_CLIENT_SECRET}
+    authorization-url: ${OAUTH2_AUTHORIZATION_URL}
+    token-url: ${OAUTH2_TOKEN_URL}
