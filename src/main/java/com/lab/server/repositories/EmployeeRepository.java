@@ -22,6 +22,11 @@ public interface EmployeeRepository extends BaseRepository<Employee, Integer> {
 			+ "	e.department_id as departmentId, e.position_id as positionId FROM public.employees e\r\n"
 			+ "	WHERE e.user_id = :userId ", nativeQuery = true)
 	public EmployeeModel findEmployeeByUserId(@Param("userId") int userId);
+	
+	@Query(value = "SELECT e.employee_id as employeeId, CONCAT(e.first_name || ' ' || e.last_name) as fullName, \r\n"
+			+ "	e.department_id as departmentId, e.position_id as positionId FROM public.employees e\r\n"
+			+ "	WHERE e.user_id = :userId ", nativeQuery = true)
+	public Employee findEmployeeByUserIdNotModel(@Param("userId") int userId);
 
 	Page<Employee> findAllByDepartmentId(Department departmentId, Pageable pageable);
 

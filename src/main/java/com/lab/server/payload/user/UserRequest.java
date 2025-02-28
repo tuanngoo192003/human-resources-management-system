@@ -20,4 +20,13 @@ public class UserRequest {
     private LocalDate dateOfBirth;
     private int positionId;
     private int departmentId;
+    
+    @Data
+    @Builder
+    public static class UpdateUserRequest{
+    	 private String username;	
+    	    private String password;
+    	    private String email;
+    	    private int roleId; 
+    }
 }
