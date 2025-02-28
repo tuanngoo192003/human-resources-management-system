@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.lab.lib.api.ApiResponse;
 import com.lab.lib.api.PaginationResponse;
+import com.lab.lib.utils.PagingUtil;
 import com.lab.server.configs.language.MessageSourceHelper;
 import com.lab.server.payload.auth.LoginRequest;
 import com.lab.server.payload.auth.LoginResponse;
@@ -24,6 +25,7 @@ import com.lab.server.payload.user.UserResponse;
 import com.lab.server.services.AuthService;
 import com.lab.server.services.UserService;
 
+import io.netty.util.internal.StringUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -35,7 +37,7 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
-	
+
 	private final AuthService authService;
 	private final UserService userService;
 	private final MessageSourceHelper messageHelper;
@@ -44,49 +46,54 @@ public class UserController {
 	public ApiResponse<LoginResponse> login(@RequestBody LoginRequest loginRequest) throws Exception {
 		return new ApiResponse<LoginResponse>(true, authService.login(loginRequest));
 	}
-	
+
 	@PostMapping("/logout")
 	public ApiResponse<Object> logout(HttpServletRequest request) throws BadRequestException {
 		authService.logout(request);
 		return new ApiResponse<Object>(true, messageHelper.getMessage("notification.logoutSucessfully"));
 	}
-	
+
 	@GetMapping("/me")
-	public ApiResponse<UserResponse> getCurrentUser(){
+	public ApiResponse<UserResponse> getCurrentUser() {
 		return new ApiResponse<>(true, userService.getCurrentUser());
 	}
-	
+
 	@Operation(summary = "API get all user")
 	@GetMapping
 	@PreAuthorize("hasAuthority('read_user')")
-    public PaginationResponse<UserResponse> getAllUsers(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int perPage,
-            @RequestParam(defaultValue = "") String search) {
-        return userService.getAllUsersWithConditions(page, perPage, search);
-    }
+	public PaginationResponse<UserResponse> getAllUsers(
+			@RequestParam(defaultValue = PagingUtil.DEFAULT_PAGE) int page,
+			@RequestParam(defaultValue = PagingUtil.DEFAULT_SIZE) int perPage,
+			@RequestParam(defaultValue = StringUtil.EMPTY_STRING) String search) {
+
+		return userService.getAllUsersWithConditions(page, perPage, search);
+	}
+
 	@Operation(summary = "API get user by ID")
 	@GetMapping("/{id}")
-	@PreAuthorize("hasAuthority('read_user')")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable int id) {
-        return ResponseEntity.ok(userService.findUserById(id));
-    }
+	@PreAuthorize("hasAuthority('read_userID')")
+	public ResponseEntity<UserResponse> getUserById(@PathVariable int id) {
+		return ResponseEntity.ok(userService.findUserById(id));
+	}
+
 	@Operation(summary = "API create user")
-    @PostMapping
-    @PreAuthorize("hasAuthority('create_user')")
-    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(request));
-    }
+	@PostMapping
+	@PreAuthorize("hasAuthority('create_user')")
+	public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest request) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(request));
+	}
+
 	@Operation(summary = "API update user")
-    @PutMapping("/{id}")
+	@PutMapping("/{id}")
 	@PreAuthorize("hasAuthority('update_user')")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable int id, @RequestBody @Valid UserRequest request) {
-        return ResponseEntity.ok(userService.updateUserById(id, request));
-    }
+	public ResponseEntity<UserResponse> updateUser(@PathVariable int id, @RequestBody @Valid UserRequest.UpdateUserRequest request) {
+		return ResponseEntity.ok(userService.updateUserById(id, request));
+	}
+
 	@Operation(summary = "API delete user")
-    @DeleteMapping("/{id}")
+	@DeleteMapping("/{id}")
 	@PreAuthorize("hasAuthority('delete_user')")
-    public ResponseEntity<String> deleteUser(@PathVariable int id) {
-        return ResponseEntity.ok(userService.deleteUserById(id));
-    }
+	public ResponseEntity<String> deleteUser(@PathVariable int id) {
+		return ResponseEntity.ok(userService.deleteUserById(id));
+	}
 }

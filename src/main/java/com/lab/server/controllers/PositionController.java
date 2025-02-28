@@ -51,8 +51,6 @@ public class PositionController {
 	@PostMapping
 	@PreAuthorize("hasAuthority('create_position')")
 	public ApiResponse<PositionResponse> createPosition(@RequestBody PositionRequest request){
-//		request.setPositionName("Developer");
-		System.out.println(request.getPositionName());
 		PositionResponse response = positionService.createPosition(request);
 		return new ApiResponse<PositionResponse>(true, response);
 	}
