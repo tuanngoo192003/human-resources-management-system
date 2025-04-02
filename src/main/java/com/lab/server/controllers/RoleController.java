@@ -33,35 +33,35 @@ public class RoleController {
 
 	@Operation(summary = "API get all roles")
 	@GetMapping("")
-	@PreAuthorize("hasAuthority('read_role')")
+	@PreAuthorize("hasAuthority('READ_ROLES')")
 	public ResponseEntity<?> getAllRoles() {
 		return ResponseEntity.ok(new ApiResponse<>(true, roleService.findAll()));
 	}
 
 	@Operation(summary = "API get role by id")
 	@GetMapping("/{id}")
-	@PreAuthorize("hasAuthority('read_role')")
+	@PreAuthorize("hasAuthority('READ_ROLES')")
 	public ResponseEntity<?> getRoleById(@PathVariable int id) {
 		return ResponseEntity.ok(new ApiResponse<>(true, roleService.findRoleById(id)));
 	}
 
 	@Operation(summary = "API create new role")
 	@PostMapping("")
-	@PreAuthorize("hasAuthority('create_role')")
+	@PreAuthorize("hasAuthority('WRITE_ROLES')")
 	public ResponseEntity<?> createRole(@RequestBody RoleRequest request) {
 		return ResponseEntity.ok(new ApiResponse<>(true, roleService.createRole(request)));
 	}
 
 	@Operation(summary = "API update role by id")
 	@PutMapping("/{id}")
-	@PreAuthorize("hasAuthority('update_role')")
+	@PreAuthorize("hasAuthority('WRITE_ROLES')")
 	public ResponseEntity<?> updateRoleById(@PathVariable int id, @RequestBody RoleRequest request) {
 		return ResponseEntity.ok(new ApiResponse<>(true, roleService.updateRoleById(id, request)));
 	}
 
 	@Operation(summary = "API delete role by id")
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasAuthority('delete_role')")
+	@PreAuthorize("hasAuthority('DELETE_ROLES')")
 	public ResponseEntity<?> deleteRoleById(@PathVariable int id) {
 		return ResponseEntity.ok(new ApiResponse<>(true, roleService.deleteRoleById(id)));
 	}

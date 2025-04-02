@@ -82,7 +82,6 @@ public class UserService extends BaseService<User, Integer> {
 			List<Employee> employees = currentUserLogin.getEmployees();
 			List<Department> departments = employees.stream().map(Employee::getDepartmentId).distinct().toList();
 			int departmentId = departments.get(0).getDepartmentId();
-			log.info("hehehehe :  "+departmentId);
 			totalRecord = repository.countUsersByDepartment(departmentId, search);
 			offset = PagingUtil.getOffset(page, perPage);
 			totalPage = PagingUtil.getTotalPage(totalRecord, perPage);

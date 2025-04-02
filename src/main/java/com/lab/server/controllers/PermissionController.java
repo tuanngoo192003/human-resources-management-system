@@ -33,7 +33,7 @@ public class PermissionController {
 	
 	@Operation(summary = "API get all permissions")
 	@GetMapping("")
-	@PreAuthorize("hasAuthority('read_permission')")
+	@PreAuthorize("hasAuthority('READ_PERMISSIONS')")
 	public ResponseEntity<?> getAllPermissions(
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_PAGE) int page,
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_SIZE) int perpage, 
@@ -43,28 +43,28 @@ public class PermissionController {
 	
 	@Operation(summary = "API get permisison by id")
 	@GetMapping("/{id}")
-	@PreAuthorize("hasAuthority('read_permission')")
+	@PreAuthorize("hasAuthority('READ_PERMISSIONS')")
 	public ResponseEntity<?> getPermissionById(@PathVariable int id) {
 		return ResponseEntity.ok(new ApiResponse<>(true, permissionService.findPermissionById(id)));
 	}
 	
 	@Operation(summary = "API create new permisison")
 	@PostMapping("")
-	@PreAuthorize("hasAuthority('create_permission')")
+	@PreAuthorize("hasAuthority('WRITE_PERMISSIONS')")
 	public ResponseEntity<?> createPermission(@RequestBody PermissionRequest request) {
 		return ResponseEntity.ok(new ApiResponse<>(true, permissionService.createPermission(request)));
 	}
 	
 	@Operation(summary = "API update permisison by id")
 	@PutMapping("/{id}")
-	@PreAuthorize("hasAuthority('update_permission')")
+	@PreAuthorize("hasAuthority('WRITE_PERMISSIONS')")
 	public ResponseEntity<?> updatePermissionById(@PathVariable int id, @RequestBody PermissionRequest request) {
 		return ResponseEntity.ok(new ApiResponse<>(true, permissionService.updatePermissionById(id,request)));
 	}
 	
 	@Operation(summary = "API delete permisison by id")
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasAuthority('delete_permission')")
+	@PreAuthorize("hasAuthority('DELETE_PERMISSIONS')")
 	public ResponseEntity<?> deletePermissionById(@PathVariable int id) {
 		return ResponseEntity.ok(new ApiResponse<>(true, permissionService.deletePermissionById(id)));
 	}

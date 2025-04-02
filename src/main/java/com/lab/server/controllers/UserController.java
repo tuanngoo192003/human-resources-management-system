@@ -60,7 +60,7 @@ public class UserController {
 
 	@Operation(summary = "API get all user")
 	@GetMapping
-	@PreAuthorize("hasAuthority('read_user')")
+	@PreAuthorize("hasAuthority('READ_USERS')")
 	public PaginationResponse<UserResponse> getAllUsers(
 			@RequestParam(defaultValue = PagingUtil.DEFAULT_PAGE) int page,
 			@RequestParam(defaultValue = PagingUtil.DEFAULT_SIZE) int perPage,
@@ -71,28 +71,28 @@ public class UserController {
 
 	@Operation(summary = "API get user by ID")
 	@GetMapping("/{id}")
-	@PreAuthorize("hasAuthority('read_userID')")
+	@PreAuthorize("hasAuthority('READ_USERS')")
 	public ResponseEntity<UserResponse> getUserById(@PathVariable int id) {
 		return ResponseEntity.ok(userService.findUserById(id));
 	}
 
 	@Operation(summary = "API create user")
 	@PostMapping
-	@PreAuthorize("hasAuthority('create_user')")
+	@PreAuthorize("hasAuthority('WRITE_USERS')")
 	public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest request) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(request));
 	}
 
 	@Operation(summary = "API update user")
 	@PutMapping("/{id}")
-	@PreAuthorize("hasAuthority('update_user')")
+	@PreAuthorize("hasAuthority('WRITE_USERS')")
 	public ResponseEntity<UserResponse> updateUser(@PathVariable int id, @RequestBody @Valid UserRequest.UpdateUserRequest request) {
 		return ResponseEntity.ok(userService.updateUserById(id, request));
 	}
 
 	@Operation(summary = "API delete user")
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasAuthority('delete_user')")
+	@PreAuthorize("hasAuthority('DELETE_USERS')")
 	public ResponseEntity<String> deleteUser(@PathVariable int id) {
 		return ResponseEntity.ok(userService.deleteUserById(id));
 	}

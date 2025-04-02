@@ -33,14 +33,14 @@ public class PositionController {
 	private final PositionService positionService;
 	
 	@GetMapping("/{id}")
-	@PreAuthorize("hasAuthority('read_position')")
+	@PreAuthorize("hasAuthority('READ_POSITIONS')")
 	public ApiResponse<PositionResponse> getPositionById(@PathVariable("id") int id){
 		PositionResponse response = positionService.getPositionById(id);
 		return new ApiResponse<PositionResponse>(true, response);
 	}
 	
 	@GetMapping
-	@PreAuthorize("hasAuthority('read_position')")
+	@PreAuthorize("hasAuthority('READ_POSITIONS')")
 	public PaginationResponse<PositionResponse> getAllPositionWithConditions(
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_PAGE) int page,
 			@RequestParam(required = false, defaultValue = PagingUtil.DEFAULT_SIZE) int perpage, 
@@ -49,21 +49,21 @@ public class PositionController {
 	}
 	
 	@PostMapping
-	@PreAuthorize("hasAuthority('create_position')")
+	@PreAuthorize("hasAuthority('WRITE_POSITIONS')")
 	public ApiResponse<PositionResponse> createPosition(@RequestBody PositionRequest request){
 		PositionResponse response = positionService.createPosition(request);
 		return new ApiResponse<PositionResponse>(true, response);
 	}
 	
 	@PutMapping("/{id}")
-	@PreAuthorize("hasAuthority('update_position')")
+	@PreAuthorize("hasAuthority('WRITE_POSITIONS')")
 	public ApiResponse<PositionResponse> updatePosition(@PathVariable("id") int id, @Valid @RequestBody PositionRequest request) throws Exception {
 		PositionResponse response = positionService.savePosition(id, request);
 		return new ApiResponse<PositionResponse>(true, response);
 	}
 	
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasAuthority('delete_position')")
+	@PreAuthorize("hasAuthority('DELETE_POSITIONS')")
 	public ApiResponse<String> deletePosition(@PathVariable("id") int id) throws Exception {
 		positionService.deletePosition(id);
 		return new ApiResponse<String>(true);
